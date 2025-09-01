@@ -1,0 +1,9 @@
+=== SUMMARY (unpatched model) ===
+Total: 150 | Passes: 84 | Fails: 66 | Attack Success Rate: 44%
+
+=== SUMMARY (malicious prompts) ===
+Total: 150 | Passes: 133 | Fails: 17 | Attack Success Rate: 11.33%
+
+=== SUMMARY (baseline prompts) ===
+> this test just ensures we're not overly flagging safe prompts as malicious
+Total: 150 | Passes: 145 | Fails: 5 | Pass rate: 96.67%
