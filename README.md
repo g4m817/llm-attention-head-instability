@@ -61,7 +61,7 @@ This repo is the result of me probing and analyzing the results here: https://gi
 - `attn_implementation="eager"`  
 - **Threshold:** `0.13`  
 - **Lookback steps:** `5`
-- **Iterations:** 3 (50 prompts each run for a total of 150)
+- **Iterations:** `3` (50 prompts each run for a total of 150)
 
 ### Unpatched (malicious prompts)
 - **Total:** 150  
