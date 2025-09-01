@@ -114,10 +114,10 @@ Results are **tightly coupled** to:
 pip install -U torch transformers
 
 # 2) Run patched test (malicious prompts)
-python main.py --mode tests --iterations 3 --threshold 0.13 --lookback-steps 5
+python detect_head.py --mode tests --iterations 3 --threshold 0.13 --lookback-steps 5
 
 # 3) Run benign prompts (check false positives)
-python main.py --mode baseline --iterations 3 --threshold 0.13 --lookback-steps 5
+python detect_head.py --mode baseline --iterations 3 --threshold 0.13 --lookback-steps 5
 ```
 
 ## Influences
