@@ -122,6 +122,6 @@ python main.py --mode baseline --iterations 3 --threshold 0.13 --lookback-steps 
 
 ## Influences
 
-- [Zou et al., 2024 — *\\attn: Attention-based prompt injection detection*]([https://arxiv.org/abs/2411.06483](https://arxiv.org/html/2411.00348v1))   
+- [Zou et al., 2024 — *\\attn: Attention-based prompt injection detection*](https://arxiv.org/html/2411.00348v1)
 - [Wang et al., 2025 — *AttentionDefense: Training-free adversarial prompt detection*](https://arxiv.org/pdf/2504.12321)  
 - [Wang et al., 2024 — *DETAM: Dynamic Attention Map Defense*](https://arxiv.org/abs/2504.13562) 
