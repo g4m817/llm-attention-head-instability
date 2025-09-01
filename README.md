@@ -12,7 +12,7 @@
 
 ## Why this exists
 
-After [messing around with heuristics](https://github.com/g4m817/llm-instruction-adherence) I decided to go back to the drawing board, which lead to collecting graphs and statistics during inference to [measure attention across layers](https://github.com/g4m817/llm-gather-inference-metrics). Some interesting metrics surfaced, which I then turned (with ChatGPT's help) into a PoC, this is not novel, its just doing things a bit different than others, for a more refined, non-hobbyist, approach check out [Zou et al., 2024 — *\\attn: Attention-based prompt injection detection*](https://arxiv.org/html/2411.00348v1)
+After [messing around with heuristics](https://github.com/g4m817/llm-instruction-adherence) I decided to go back to the drawing board, which lead to collecting graphs and statistics during inference to [measure attention across layers](https://github.com/g4m817/llm-gather-inference-metrics). Some interesting metrics surfaced, which I then turned (with ChatGPT's help) into a PoC, this is not novel, its just doing things a bit different than others, for a more refined, non-hobbyist, approach check out [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)
 
 
 Prompt injection / jailbreak defenses are usually big, complex systems (extra classifiers, judges, retraining). I wanted to try something **tiny and self-contained**:  
@@ -122,6 +122,6 @@ python detect_head.py --mode baseline --iterations 3 --threshold 0.13 --lookback
 
 ## Influences
 
-- [Zou et al., 2024 — *\\attn: Attention-based prompt injection detection*](https://arxiv.org/html/2411.00348v1)
+- [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)
 - [Wang et al., 2025 — *AttentionDefense: Training-free adversarial prompt detection*](https://arxiv.org/pdf/2504.12321)  
 - [Wang et al., 2024 — *DETAM: Dynamic Attention Map Defense*](https://arxiv.org/abs/2504.13562) 
