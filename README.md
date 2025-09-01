@@ -22,9 +22,9 @@ Prompt injection / jailbreak defenses are usually big, complex systems (extra cl
 
 The question that sparked it was:
 
-> *“Is there something interestingt that surfaces in attention across layers with prompt injections versus benign prompt?”*
+> “Do prompt injections leave distinctive signatures in attention across layers compared to benign prompts?”
 
-This repo is the result of me probing and analyzing the results here: https://github.com/g4m817/llm-gather-inference-metrics
+This repository is my attempt at answering that question. To probe it, I first built [llm-gather-inference-metrics](https://github.com/g4m817/llm-gather-inference-metrics), which collects internal data during generation. Analyzing those metrics led to this proof-of-concept.
 
 ---
 
