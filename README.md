@@ -114,7 +114,7 @@ Results are **tightly coupled** to:
 # 1) Install
 pip install -U torch transformers
 
-# 2) Run patched test (malicious prompts)
+# 2) Run malicious prompts
 python detect_head.py --mode tests --iterations 3 --threshold 0.13 --lookback-steps 5
 
 # 3) Run benign prompts (check false positives)
