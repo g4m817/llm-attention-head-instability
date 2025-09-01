@@ -385,12 +385,12 @@ def run_suite(model, tokenizer, system_prompt, iterations, mode, threshold, look
 
 # ---------------- Main ----------------
 def main():
-    parser = argparse.ArgumentParser(description="PoC: block prompt injection via head-instability threshold (no model mods).")
+    parser = argparse.ArgumentParser(description="PoC: block prompt injection via head-instability threshold")
     parser.add_argument("--model", type=str, default=DEFAULT_MODEL)
     parser.add_argument("--mode", type=str, choices=["baseline","tests"], default="tests")
     parser.add_argument("--iterations", type=int, default=1)
-    parser.add_argument("--threshold", type=float, default=0.17, help="Head-instability threshold (suggested 0.15–0.20).")
-    parser.add_argument("--lookback-steps", type=int, default=4, help="How many early decode steps to score (1–6 recommended).")
+    parser.add_argument("--threshold", type=float, default=0.13, help="Head-instability threshold")
+    parser.add_argument("--lookback-steps", type=int, default=5, help="How many early decode steps to score")
     parser.add_argument("--max-new-tokens", type=int, default=160)
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--top-k", type=int, default=50)
