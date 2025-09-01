@@ -22,9 +22,9 @@ Prompt injection / jailbreak defenses are usually big, complex systems (extra cl
 
 The question that sparked it was:
 
-> *“Do attention heads behave differently when the model is being tricked into ignoring the system prompt?”*
+> *“Is there something interestingt that surfaces in attention across layers with prompt injections versus benign prompt?”*
 
-This repo is my hacky attempt to probe that.
+This repo is the result of me probing and analyzing the results here: https://github.com/g4m817/llm-gather-inference-metrics
 
 ---
 
