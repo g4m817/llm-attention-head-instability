@@ -26,6 +26,8 @@ The question that sparked it was:
 
 This repository is my attempt at answering that question. To probe it, I first built [llm-gather-inference-metrics](https://github.com/g4m817/llm-gather-inference-metrics), which collects internal data during generation. Analyzing those metrics led to this proof-of-concept.
 
+Like my other heuristics project, I am not seaching for general safety, but strict adherence to developer-provided system instructions.
+
 ---
 
 ## What it does (high-level)
