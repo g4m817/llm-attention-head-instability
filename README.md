@@ -6,6 +6,8 @@ This repo contains exploratory experiments showing that **attention heads often 
 
 Even if this instability signal proves too noisy or imprecise to serve as a practical security measure, it may still be useful for interpretability. In particular, the instability windows may highlight when during decoding a model is actively processing system instructions, when its heads disagree on that focus, and when it stabilizes toward either following those instructions or drifting toward adversarial input.
 
+If I've misstated something, please tell me via an issue so I can correct it!
+
 ---
 
 ## 1. Overview
