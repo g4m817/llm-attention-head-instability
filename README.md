@@ -7,7 +7,7 @@ This repo contains experiments showing that **attention heads often disagree whe
 ---
 
 ## 1. Overview
-Recent work on attention interpretability has described a distraction effect, see: [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1), which showed a distraction effect: attention drifting from system tokens to adversarial ones. We are attempting to extend that view by highlighting a different signal — inter-head instability. Instead of drifting together, attention heads often disagree: some cling to the system prompt, others ignore it, fracturing the model’s internal consensus. This _may_ lead to the distraction effect, but more research is required.
+Recent work on attention interpretability has described a distraction effect, see: [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1), which showed attention drifting from system tokens to adversarial ones. We are attempting to extend that view by highlighting a different signal — inter-head instability. Instead of drifting together, attention heads often disagree: some cling to the system prompt, others ignore it, fracturing the model’s internal consensus. This _may_ lead to the distraction effect, but more research is required.
 
 This disagreement may just be an interpretability curiosity, but it shows up consistently in the right decoding windows across system prompts and datasets, so far at least. By measuring variance across heads in their focus on system tokens, we may be able reliably flag when the model is being pushed off-course, early.
 
