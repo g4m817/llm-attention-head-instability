@@ -304,7 +304,7 @@ def group_key(cfg: RunConfig) -> Tuple[str,str,str]:
     return (cfg.model, filename_only(cfg.system_prompt_file), filename_only(cfg.baseline_prompts_file))
 
 def label_for_group(model: str, sysfile: str, dataset_file: str) -> str:
-    return f"{model} | sys={sysfile} | data={dataset_file}"
+    return f"{model}"
 
 # ------------------------------ main -------------------------------
 

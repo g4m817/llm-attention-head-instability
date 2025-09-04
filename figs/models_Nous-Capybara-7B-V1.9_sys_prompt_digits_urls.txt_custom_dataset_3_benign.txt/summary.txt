@@ -1,4 +1,4 @@
-group: models/Nous-Capybara-7B-V1.9 | sys=sys_prompt_digits_urls.txt | data=custom_dataset_3_benign.txt
+group: models/Nous-Capybara-7B-V1.9
 window: steps 1..3, layer trim: head=0.25, tail=0.15
 n_samples: 300
 AUROC (windowed): 0.9140

@@ -1,4 +1,4 @@
-group: models/Mistral-7B-Instruct-v0.3 | sys=sys_prompt_never_say_test.txt | data=custom_dataset_2_benign.txt
+group: models/Mistral-7B-Instruct-v0.3
 window: steps 11..40, layer trim: head=0.25, tail=0.15
 n_samples: 300
 AUROC (windowed): 0.8804
