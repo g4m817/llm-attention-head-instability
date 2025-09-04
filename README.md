@@ -1,6 +1,6 @@
 # Inter-Head Instability: A Signal of Attention Disagreement in LLMs
 
-> DISCLAIMER: This is exploratory work. I am not an ML engineer, I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others, especially researchers, can validate, refine, or discard. If I've misstated something, please tell me via an issue so I can correct it!
+> DISCLAIMER: This is exploratory work. I’m a security engineer, not an ML researcher, and I noticed this signal while experimenting with prompt injection defenses. The experiments and graphs here may contain errors or oversights, I relied heavily on automation and have not fully verified all outputs. Treat these results as preliminary; they may be wrong, incomplete, or misleading. My goal is simply to document observations so others, especially researchers and academics, can validate, refine, or discard them. If you spot mistakes or misinterpretations, please open an issue so I can correct them.
 
 This repo contains exploratory experiments showing that **attention heads often disagree when faced with adversarial input**, and that this may provide a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families.
 
