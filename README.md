@@ -18,7 +18,7 @@ There are, of course, outliers. Some benign prompts confuse the model’s heads,
 ---
 
 ## 2. Method
-- **Metric:** Std dev across heads of attention to system tokens, per layer/step.  
+- **Metric:** Std dev across heads of attention to system tokens, per layer/step, within a model-specific window of steps.
 - **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately stabilizing, these windows appear to be different per model.
 - **Windows:**  
   - Nous-Capybara-7B → steps **1–3**.  
