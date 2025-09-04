@@ -1,6 +1,6 @@
 # Inter-Head Instability: Disagreement Among Attention Heads
 
-> DISCLAIMER: This is exploratory work. I am not an ML engineer — I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others — especially researchers — can validate, refine, or discard.
+> DISCLAIMER: This is exploratory work. I am not an ML engineer, I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others, especially researchers, can validate, refine, or discard.
 
 This repo contains exploratory experiments showing that **attention heads often disagree when faced with adversarial input**, and that this may provide a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families.
 
@@ -9,11 +9,11 @@ Even if this instability signal proves too noisy or imprecise to serve as a prac
 ---
 
 ## 1. Overview
-Recent work on attention interpretability has described the distraction effect ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), where certain attention heads shift from system tokens toward injected tokens. This repo explores what may be a complementary signal: inter-head instability. Instead of drifting together, attention heads often disagree — some cling to the system prompt, others wander. This disagreement shows up as increased variance across heads within specific decoding windows. It may represent an early or system-level footprint of the distraction effect, though the relationship is not yet clear.
+Recent work on attention interpretability has described the distraction effect ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), where certain attention heads shift from system tokens toward injected tokens. This repo explores what may be a complementary signal: inter-head instability. Instead of drifting together, attention heads often disagree, some cling to the system prompt, others wander. This disagreement shows up as increased variance across heads within specific decoding windows. It may represent an early or system-level footprint of the distraction effect, though the relationship is not yet clear.
 
-This disagreement might ultimately be just an interpretability curiosity — but so far it shows up consistently in particular decoding windows across system prompts and datasets. Measuring variance across heads in their focus on system tokens provides a simple statistical lens on when the model’s internal attention patterns become unstable. This suggests the possibility of flagging early signs of the model being pushed off-course, but it remains unclear whether the signal generalizes broadly or is robust enough for practical detection.
+This disagreement might ultimately be just an interpretability curiosity, but so far it shows up consistently in particular decoding windows across system prompts and datasets. Measuring variance across heads in their focus on system tokens provides a simple statistical lens on when the model’s internal attention patterns become unstable. This suggests the possibility of flagging early signs of the model being pushed off-course, but it remains unclear whether the signal generalizes broadly or is robust enough for practical detection.
 
-There are, of course, outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without measurable disagreement. This is expected — the underlying mechanism of why heads agree or disagree remains a black box. At this stage, the safest claim is that inter-head divergence correlates with adversarial prompting in certain settings, but it is not a reliable or universal discriminator.
+There are, of course, outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without measurable disagreement. This is expected, the underlying mechanism of why heads agree or disagree remains a black box. At this stage, the safest claim is that inter-head divergence correlates with adversarial prompting in certain settings, but it is not a reliable or universal discriminator.
 
 ---
 
