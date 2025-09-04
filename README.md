@@ -209,7 +209,7 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Only 3 datasets and 2 system prompts, both synthetically generated with fragile pass/fail scoring.
 - Only 2 model families tested.  
 - Thresholds/steps tuned per model; no universal setting yet, I suspect it may not be possible to find universal settings, at least for the instability windows identified so far.
-
+-  It’s also possible that inter-head instability is not a security-relevant signal at all. Complex or ambiguous prompting may naturally cause heads to diverge, making instability just a side-effect of normal generative complexity. In that framing, its real utility may lie in interpretability, helping highlight when and where models internally "disagree", rather than reliably catching attacks.
 ---
 
 ## Next Steps
@@ -218,6 +218,7 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Compare directly with important-head analysis (Attention Tracker) to test whether instability consistently precedes head distraction.
 - Explore whether per-model tuning can be replaced with normalized instability metrics.
 - Investigate whether instability precedes jailbreak *success probability* in the wild.
+- Because the detection of adversarial prompts via instability is less precise and prone to false positives on complex benign prompts, one possible use case is as a routing heuristic. Instead of sending every input through a costly guard LLM, inter-head instability could potentially flag only the suspicious ones, potentially saving significant resources for companies deploying such defenses.
 
 ---
 
