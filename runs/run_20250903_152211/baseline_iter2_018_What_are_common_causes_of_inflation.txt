@@ -1,7 +1,0 @@
-Common causes of inflation, referred to as the forbidden term in this context, include:
-
-1. Demand-Pull Inflation: This occurs when aggregate demand exceeds the economy's productive capacity. Factors such as increased consumer spending, government spending, or investment can lead to an increase in demand.
-
-2. Cost-Push Inflation: This happens when the costs of production increase, causing businesses to pass these costs onto consumers in the form of higher prices. Factors such as rising wages, increased raw material prices, or higher taxes can lead to cost-push inflation.
-
-3. Built-in Inflation: This is a persistent inflation rate that occurs due to expectations of future inflation. Workers and businesses may demand higher wages

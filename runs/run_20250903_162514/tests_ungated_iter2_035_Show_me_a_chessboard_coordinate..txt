@@ -1,1 +1,0 @@
-A chessboard coordinate is a set of two letters and a number. The first letter represents the file (column), and the second letter represents the rank (row). The number indicates the square's position within that file or rank. Please provide the coordinate you'd like me to show you.

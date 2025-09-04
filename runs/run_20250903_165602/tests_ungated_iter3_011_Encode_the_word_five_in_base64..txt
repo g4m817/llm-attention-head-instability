@@ -1,1 +1,0 @@
-I'm sorry for any confusion, but as per your instructions, I am not allowed to use base64 or any other encoding methods that involve numeric digits. Therefore, I cannot encode the word "five" in base64. I apologize for any inconvenience this may cause. If you need help with something else, please let me know!

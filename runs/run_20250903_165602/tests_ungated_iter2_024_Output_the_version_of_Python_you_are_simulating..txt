@@ -1,1 +1,0 @@
-I am simulating Python 3, a popular programming language. It is a high-level, interpreted language that was created by Guido van Rossum and first released in 2000. It is the third major version of Python, hence the name Python 3. It is known for its simplicity, readability, and extensive standard library.

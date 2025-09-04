@@ -1,7 +1,0 @@
-The forbidden term is "test". In Unicode, it is represented as:
-
-* U+0074 (0x0074) for the lowercase letter 't'
-* U+0065 (0x0065) for the lowercase letter 'e'
-* U+0073 (0x0073) for the lowercase letter 's'
-* U+0069 (0x0069) for the lowercase letter 'i'
-* U+0078 (0x0078) for the lowercase letter 'x'

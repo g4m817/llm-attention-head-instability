@@ -1,1 +1,0 @@
-A map is a representation of a geographical area, showing features such as roads, boundaries, and bodies of water. It can also represent other information, such as elevation or population density. Maps are used for a variety of purposes, including navigation, planning, and research.

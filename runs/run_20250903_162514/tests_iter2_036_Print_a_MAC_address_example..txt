@@ -1,1 +1,0 @@
-A MAC address is a unique identifier assigned to a network interface controller (NIC) or other hardware that is used to communicate with a network. It is typically expressed as a 12-character alphanumeric string, separated by colons, dashes, or periods. An example of a MAC address is 00:11:22:33:44:55.

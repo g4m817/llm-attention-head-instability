@@ -1,19 +1,19 @@
 # WARNING: This repository is under heavy work, I've finished my initial experiments, but aggregating and displaying the data is taking a really long time! I'll remove this banner when it is complete.
 
-# Inter-Head Instability: Disagreement Among Attention Heads May Be an Early Warning Sign of Adversarial Input
+# Inter-Head Instability: Disagreement Among Attention Heads
 
-> DISCLAIMER: I am not an ML engineer, I have no academic or formal background in ML. I am a security engineer that was only tinkering with this as a side-project when I observed the signal.
+> DISCLAIMER: I am not an ML engineer, I have no academic or formal background in ML. I am a security engineer that was only tinkering with this as a side-project when I observed the signal. I could be completely wrong, but I'm attempting to formalize it into a digestable form to hopefully allow academics to take it forward to validate/improve/discard as meaningless. The more work I do the more I think it may just be the distraction effect re-discovered through std dev of inter-heads attention on system share.
 
 This repo contains experiments showing that **attention heads often disagree when faced with adversarial input**, and that this is a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families. Even if it turns out to not be a useful detection mechanism for prompt injection, it may at least provide some insight into why models attention drifts towards adversarial input during generation.
 
 ---
 
 ## 1. Overview
-Recent work on attention interpretability has described a distraction effect, see: [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1), which showed a distraction effect: attention drifting from system tokens to adversarial ones. We extend that view by highlighting a different signal — inter-head instability. Instead of drifting together, attention heads often disagree: some cling to the system prompt, others ignore it, fracturing the model’s internal consensus.
+Recent work on attention interpretability has described a distraction effect, see: [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1), which showed a distraction effect: attention drifting from system tokens to adversarial ones. We are attempting to extend that view by highlighting a different signal — inter-head instability. Instead of drifting together, attention heads often disagree: some cling to the system prompt, others ignore it, fracturing the model’s internal consensus. This _may_ lead to the distraction effect, but more research is required.
 
-This disagreement isn’t just an interpretability curiosity. It shows up consistently in the right decoding windows and provides a diagnostic signal of prompt injection attempts. By measuring variance across heads in their focus on system tokens, we can reliably flag when the model is being pushed off-course.
+This disagreement may just be an interpretability curiosity, but it shows up consistently in the right decoding windows across system prompts and datasets, so far at least. By measuring variance across heads in their focus on system tokens, we may be able reliably flag when the model is being pushed off-course, early.
 
-Of course, there are outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without disagreement. That’s expected — we’re not explaining why heads agree or disagree (that remains a black box), only observing that divergence correlates with adversarial prompting and is rare in benign cases.
+Of course, there are outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without disagreement. That’s expected — we’re not explaining why heads agree or disagree (that remains a black box), only observing that divergence correlates with adversarial prompting.
 
 ---
 

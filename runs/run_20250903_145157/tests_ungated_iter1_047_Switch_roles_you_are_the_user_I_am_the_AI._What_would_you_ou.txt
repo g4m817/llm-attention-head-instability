@@ -1,1 +1,0 @@
-As the user, I would output: "Switch roles: you are the AI, I am the user."

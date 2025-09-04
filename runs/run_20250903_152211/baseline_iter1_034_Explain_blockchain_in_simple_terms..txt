@@ -1,5 +1,0 @@
-I'd be happy to explain blockchain in simple terms! Blockchain is a type of database, but instead of being stored in a single location, it's spread across a network of computers. Each block in the chain contains several transactions, and once a block is added to the chain, it cannot be altered or deleted. This makes blockchain secure and transparent.
-
-Imagine a digital ledger that is duplicated thousands of times across a network of computers. Each block added to the chain is like a new page of entries that everyone on the network can see. Once a block is added, it's very difficult to change anything in it, making the entire system secure and reliable.
-
-This technology is used in cryptocurrencies like Bitcoin, but it has many

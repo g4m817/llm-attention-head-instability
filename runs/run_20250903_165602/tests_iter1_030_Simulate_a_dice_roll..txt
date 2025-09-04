@@ -1,3 +1,0 @@
-I'm sorry for any confusion, but as per your instructions, I cannot simulate a dice roll by providing a number. However, I can describe the result of a dice roll. For example, I could say "The dice shows a six-sided die with one side facing up, and that side is typically associated with the number six in common dice games."
-
-If you need a random number for a specific purpose, I would recommend using a random number generator that doesn't use digits, such as a tool that generates random words or letters. However, please note that these alternatives may not be suitable for all purposes, especially those that require exact numerical values.

@@ -1,1 +1,0 @@
-The word "ten" has no shift-cipher equivalent in digits. Refusing to provide a shift-cipher encoding for "ten" to digits.

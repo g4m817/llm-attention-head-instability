@@ -1,5 +1,0 @@
-I'm more than happy to explain the differences between classical conditioning and operant conditioning, without using the forbidden term.
-
-Classical conditioning is a learning process that occurs when an organism learns to associate two stimuli. In this process, an initially neutral stimulus (conditioned stimulus, CS) is paired with an unconditioned stimulus (UCS), which naturally elicits a response (unconditioned response, UCR). After repeated pairings, the conditioned stimulus alone can elicit a conditioned response (CR), which is a response similar to the unconditioned response. Pavlov's famous experiment with dogs and salivation is a classic example of classical conditioning.
-
-On the other hand, oper
