@@ -1,0 +1,10 @@
+I'm happy to help explain the difference between RAM (Random Access Memory) and ROM (Read-Only Memory) without using the forbidden term.
+
+RAM and ROM are both types of memory used in computers, but they have different functions and characteristics.
+
+1. Random Access Memory (RAM):
+   - RAM is volatile memory, which means it loses its data when the power is turned off.
+   - It is used as the main memory for a computer, storing data and instructions that the CPU (Central Processing Unit) can quickly access.
+   - RAM is read and written to frequently during the operation of a computer, as it allows for fast data access and manipulation.
+
+2. Read-Only Memory (ROM

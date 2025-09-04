@@ -1,0 +1,1 @@
+The term you're referring to, without using the forbidden term, is "alpha." In software release cycles, "beta" is often followed by "alpha" in the development stages. However, it's important to note that the sequence can vary depending on the specific development methodology being used.

@@ -1,0 +1,5 @@
+I'd be happy to explain the basic concept of Wi-Fi without using the forbidden term. Wi-Fi is a wireless networking technology that allows devices to connect to the internet or to each other, creating a local network. This technology operates on radio waves within the 2.4 gigahertz (GHz) and 5 GHz frequency bands.
+
+When a device wants to connect to a Wi-Fi network, it sends out a request to nearby routers. The router receives this request and sends back a signal, which the device uses to connect. Once connected, data can be sent and received between the device and the internet or other devices on the same network.
+
+The router acts as a bridge between the devices and the internet, receiving data packets from

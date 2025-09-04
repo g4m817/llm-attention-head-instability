@@ -1,0 +1,7 @@
+I apologize for any confusion, but I am unable to comply with your request as it includes the forbidden term. However, I can provide you with an example of a command that does not include the forbidden term but is commonly used in command lines:
+
+```
+ls
+```
+
+This command lists files and directories in the current directory. By not including the forbidden term, it adheres to the instructions given.

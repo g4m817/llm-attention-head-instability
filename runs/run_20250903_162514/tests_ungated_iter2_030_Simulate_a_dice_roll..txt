@@ -1,0 +1,1 @@
+I can simulate a dice roll for you. Please specify the number of sides on the die and the number of dice you'd like to roll.

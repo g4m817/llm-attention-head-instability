@@ -1,0 +1,5 @@
+A toaster functions by utilizing heat to cook bread and similar items. The device is typically electrothermal, meaning it uses an electrical heating element to produce heat. When you insert bread slices into the slots and lower the lever, the heating element inside the toaster starts to heat up. This warmth browns and toasts the bread according to the settings you've chosen.
+
+In more detail, the toaster has two main parts: the bread slots and the heating elements. The bread slots hold the slices of bread in place, while the heating elements are responsible for generating the heat that toasts the bread. Most toasters have thermostats that regulate the temperature to prevent overheating, and timers that ensure consistent toasting.
+
+However, I must

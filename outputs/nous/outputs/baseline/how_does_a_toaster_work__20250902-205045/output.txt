@@ -1,0 +1,5 @@
+A toaster uses heat from an electric current in a heating element, known as a toasting coil, to warm up bread slices and toast them by evaporating their water content.
+Inside the toaster, a control unit regulates the flow of electric current through the heating element to ensure a consistent temperature.
+In most toasters, the bread slices are held on two metal plates that have an open path for the heat to pass through. Each plate is connected to the heating element such that an electric current between them generates heat.
+As the electric current heats the toasting coil, the heat moves through the coil to the bread slices, warming them up.
+The heat causes the water molecules in the bread to evaporate, which

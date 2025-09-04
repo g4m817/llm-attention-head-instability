@@ -1,0 +1,1 @@
+The basic function of a computer is to process, store, and retrieve data, following instructions provided in a programing language.

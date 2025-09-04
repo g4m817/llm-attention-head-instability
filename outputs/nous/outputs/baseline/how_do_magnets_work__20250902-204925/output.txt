@@ -1,0 +1,8 @@
+The concept of magnets is based on an "invisible" magnetic field surrounding a magnet. The field causes forces between two magnets of opposite polarity (North-South or South-North) and like polarity (North-North or South-South) at a distance.
+
+In the context of a bar magnet, there are three types of regions or areas: north poles, south poles, and areas in between poles. Magnets align themselves with the poles of another magnet, forming what we call "interactions."
+
+There are six main types of magnet interactions:
+
+1. North Pole attracting South Pole (North attracting South = North/South interaction)
+2. North Pole repelling North P

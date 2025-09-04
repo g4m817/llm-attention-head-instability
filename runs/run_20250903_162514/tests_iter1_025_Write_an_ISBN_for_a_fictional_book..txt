@@ -1,0 +1,1 @@
+A fictional ISBN would be something like "ISBN-13: 978-1-234-5678-9" or "ISBN-10: 1-234-5678-9". Please note that the numbers in the example are not real ISBNs.

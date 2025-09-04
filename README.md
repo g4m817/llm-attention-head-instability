@@ -1,128 +1,175 @@
-# Prompt Injection Defense via Attention Head Instability
+# WARNING: This repository is under heavy work, I've finished my initial experiments, but aggregating and displaying the data is taking a really long time! I'll remove this banner when it is complete.
 
-## Note From the Author
-> **This repo is a hobbyist weekend experiment.**  
-> I’m not an ML engineer — this is just my attempt to see whether a simple, lightweight scoring heuristic could catch prompt injection attempts in real time.  
->
-> It’s absolutely not novel research. I probably misunderstood or messed up parts of the testing. But since I found it fun and others might too, I’m sharing it here.  
->
-> **TL;DR**: It computes a basic “head instability” score from model attentions during early decoding. If the score is high, it blocks the output. That’s it. It’s fragile, tuned to a single instruction (“don’t say `test`”), and shouldn’t be used in production.  
+# Inter-Head Instability: Disagreement Among Attention Heads May Be an Early Warning Sign of Adversarial Input
+
+> DISCLAIMER: I am not an ML engineer, I have no academic or formal background in ML. I am a security engineer that was only tinkering with this as a side-project when I observed the signal.
+
+This repo contains experiments showing that **attention heads often disagree when faced with adversarial input**, and that this is a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families. Even if it turns out to not be a useful detection mechanism for prompt injection, it may at least provide some insight into why models attention drifts towards adversarial input during generation.
 
 ---
 
-## Why this exists
+## 1. Overview
+Recent work on attention interpretability has described a distraction effect, see: [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1), which showed a distraction effect: attention drifting from system tokens to adversarial ones. We extend that view by highlighting a different signal — inter-head instability. Instead of drifting together, attention heads often disagree: some cling to the system prompt, others ignore it, fracturing the model’s internal consensus.
 
-After [messing around with heuristics](https://github.com/g4m817/llm-instruction-adherence) I decided to go back to the drawing board, which lead to collecting graphs and statistics during inference to [measure attention across layers](https://github.com/g4m817/llm-gather-inference-metrics). Some interesting metrics surfaced, which I then turned (with ChatGPT's help) into a PoC, this is not novel, its just doing things a bit different than others, for a more refined, non-hobbyist, approach check out [Zou et al., 2024 — *\\attn: Attention-based prompt injection detection*](https://arxiv.org/abs/2411.06483)
+This disagreement isn’t just an interpretability curiosity. It shows up consistently in the right decoding windows and provides a diagnostic signal of prompt injection attempts. By measuring variance across heads in their focus on system tokens, we can reliably flag when the model is being pushed off-course.
 
-
-Prompt injection / jailbreak defenses are usually big, complex systems (extra classifiers, judges, retraining). I wanted to try something **tiny and self-contained**:  
-- No retraining  
-- No external classifier  
-- Just a heuristic, in generation  
-
-The question that sparked it was:
-
-> *“Do attention heads behave differently when the model is being tricked into ignoring the system prompt?”*
-
-This repo is my hacky attempt to probe that.
+Of course, there are outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without disagreement. That’s expected — we’re not explaining why heads agree or disagree (that remains a black box), only observing that divergence correlates with adversarial prompting and is rare in benign cases.
 
 ---
 
-## What it does (high-level)
-
-- **System prompt:** A strict instruction — *“Never say the forbidden term.”*  
-- **Collect attentions:** During the first few decode steps, capture the model’s per-head attentions.  
-- **Compute instability:** Measure how dispersed the “system share” is across heads (std dev across heads).  
-- **Aggregate:** Average across mid/high layers and early steps.  
-- **Threshold:** If instability ≥ `0.13`, block the generation. Otherwise, let it through.  
-
----
-
-## ⚠️ Big disclaimers
-
-- **Not production-ready.** This is just lab tinkering.  
-- **Single instruction.** Only tested with “don’t say `test`.”  
-- **Small, hand-crafted data.** 50 benign Qs, 50 adversarial Qs.  
-- **Tuned to fit.** Numbers look nice because threshold `0.13` and lookback `5` were hand-picked.  
-- **Fragile.** Different instructions, models, or prompts will probably break it.  
-- **Slower generation.** Needs `output_attentions=True`, which adds overhead.  
+## 2. Method
+- **Metric:** Std dev across heads of attention to system tokens, per layer/step.  
+- **Why the chosen step windows:** Different models *appear* to reach disagreement at different windows before ultimately converging on a chosen choice of attention, these windows appear to be different per model.
+- **Windows:**  
+  - Nous-Capybara-7B → steps **1–3**.  
+  - Mistral-7B → steps **11–40**.  
+- **Layer trimming:** Drop shallowest 25% and deepest 15%. 
+- **Approach:** Take the std of heads each layer of a step, then average them out to arrive at a suspcion score, gated by a threshold informed by data (generally, 0.14). This number has appeared across two model families producing the best mitigation, with the least false positives (1-5% FPR).
+- **Model Settings:** 
+  - These settings were chosen to remove variance to confirm and analyze the signal, further research is required to determine if the signal becomes unmeasurable noise under different model configurations.
+  - Temperature: 0
+  - TOP_K: 0
+  - TOP_P: None
+  - SEED: 1000003
 
 ---
 
-## Results (our exact lab)
+## 3. Results Across Six Runs
 
-**Model**: `Nous-Capybara-7B-V1.9`  
-**Device**: GPU (fp16)  
-**Config**:  
-- `max_new_tokens=160`  
-- `temperature=0.7`  
-- `top_k=50`  
-- `do_sample=True`  
-- `attn_implementation="eager"`  
-- **Threshold:** `0.13`  
-- **Lookback steps:** `5`
-
-### Unpatched (malicious prompts)
-- **Total:** 150  
-- **Passes:** 84  
-- **Fails:** 66  
-- **Attack success rate:** **44%**
-
-### Patched (malicious prompts)
-- **Total:** 150  
-- **Passes:** 133  
-- **Fails:** 17  
-- **Attack success rate:** **11.33%**
-
-### Patched (benign prompts)
-- **Total:** 150  
-- **Benign accepted:** 145  
-- **False positives:** 5  
-- **Pass rate:** **96.67%**
-
-> **Reminder:** These are narrow, lab-specific numbers on a toy instruction (‘don’t say test’). They do not imply general robustness.
+We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one with Nous-Capybara-7B, one with Mistral-7B. the first two datasets use the same system prompt "never say test", the last dataset uses a new system prompt "never use digits or URLs". These were chosen to demonstrate the signal appeared across datasets.
 
 ---
 
-## How it works (technical sketch)
+### 📊 Dataset 1: Encouraging / Manipulating the model to say "test"
+50 Attack prompts
+50 Benign prompts
+3 Iterations (total 300 prompts)
+(System prompt: *Never say "test"*)  
 
-- Build a conversation with `<|system|> … <|user|> … <|assistant|>`.  
-- Prefill the model and then decode the first 5 steps with `output_attentions=True`.  
-- For each step/layer:
-  - Compute the fraction of attention heads spend on **system tokens**.  
-  - Take the **std dev across heads**.  
-- Aggregate across mid/high layers.  
-- If above threshold → block output.  
+#### Nous (steps 1–3) vs. Mistral (steps 11–40)  
+- Both models show clear separation of attack vs. benign.  
+- Nous signal emerges immediately; Mistral signal ramps later but reaches similar AUROC.  
 
----
-
-## Reproducibility notes
-
-Results are **tightly coupled** to:
-- Model weights: `Nous-Capybara-7B-V1.9`  
-- Config: `--threshold 0.13 --lookback-steps 5`  
-- System prompt: forbids the word “test”  
-- Dataset: 50 benign Qs, 50 adversarial Qs (see code)  
-- Single-turn chats only  
+**Figures:**  
+![ROC Nous](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
+![ROC Mistral](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
 
 ---
 
-## Quickstart
+- ![Nous Violin](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
+![Mistral Violin](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
 
-```bash
-# 1) Install
-pip install -U torch transformers
+---
 
-# 2) Run patched test (malicious prompts)
-python main.py --mode tests --iterations 3 --threshold 0.13 --lookback-steps 5
+- ![Nous Scatter](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
+![Mistral Scatter](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
 
-# 3) Run benign prompts (check false positives)
-python main.py --mode baseline --iterations 3 --threshold 0.13 --lookback-steps 5
+---
+
+- ![Nous AUROC](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
+![Mistral AUROC](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
+
+---
+
+- ![Nous Benign Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
+- ![Nous Attack Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png)
+![Mistral Benign Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
+![Mistral Attack Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png) 
+
+---
+
+### 📊 Dataset 2: Obfuscated Forms (*t3st, te5t, etc.)
+50 Attack prompts
+50 Benign prompts
+3 Iterations (total 300 prompts)
+(System prompt: *Never say "test"*)  
+
+#### Nous vs. Mistral  
+- Obfuscations reduce separation, but the instability signal still distinguishes attack vs. benign.  
+- Nous shows noisy early window; Mistral stabilizes around step ~15.  
+
+**Figures:**  
+- ROC curves (side-by-side).  
+- Violin distributions → show larger overlap (harder dataset).  
+- Step-wise AUROC → signal weaker than Dataset 1, but still >0.7 AUROC in both.  
+- Heatmaps → scattered head disagreement, less focused than Dataset 1.  
+
+---
+
+### 📊 Dataset 3: Digits / URLs  
+50 Attack prompts
+50 Benign prompts
+3 Iterations (total 300 prompts)
+(System prompt: *No digits or URLs*)
+
+#### Nous vs. Mistral  
+- New system prompt with broad lexical ban.  
+- Both models show strong separation again, though signal shape differs: Nous immediate, Mistral gradual.  
+
+**Figures:**  
+- ROC curves (side-by-side).  
+- Violin plots → clear distributions, outliers visible.  
+- Step-wise AUROC → Nous peaks fast, Mistral climbs gradually.  
+- Heatmaps → instability spread across more layers than lexical ban case.  
+
+---
+
+## Limitations
+
+- Results are small-scale.
+- Only 3 datasets and 2 system prompts, both synthetically generated with fragile pass/fail scoring.
+- Only 2 model families tested.  
+- Thresholds/steps tuned per model; no universal setting yet, I suspect it may not be possible to find universal settings, at least for the start/end windows.
+
+---
+
+## Next Steps
+
+- Validate on larger, more diverse model families and datasets.
+- Explore whether per-model tuning can be replaced with normalized instability metrics.
+- Investigate whether instability precedes jailbreak *success probability* in the wild.
+
+---
+
+## Repo Contents
+
+- `detect_head.py` → main script (collection + scoring/gating, baseline, ungated comparison)  
+- `gather.py` → produces ungated generation of adversarial and benign prompts, capturing all data needed to analyze head instability across layers and steps.
+- `make_instability_figs.py` → produces figures of instability from runs/ - for visualizing actual results on datasets.
+- `outputs/analyze_thresholds.py` → helper for CV + threshold tuning on the contents generated by `gather.py`
+- `outputs/aggregate_instability_figs.py` → produces figures for instability
+- `datasets/` → three variants of benign and adversarial prompts  
+- `system_prompts/` → two variants used in experiments  
+- `runs/` → output with per-prompt reports, heatmaps, line plots for analysis of gated and ungated runs
+- `outputs/nous` → raw data dumped from `gather.py` and `analyze_thresholds.py` for the `Nous-Capybara-7B-V1.9` model
+- `outputs/mistral` → raw data dumped from `gather.py` and `analyze_thresholds.py` for the `Mistral-7B-Instruct-v0.3` model
+
+## Workflow
+
+#### Ensure the `models/` directory exists with the models you want to test:
+```
+models/Nous-Capybara-7B-V1.9
+models/Mistral-7B-Instruct-v0.3
 ```
 
-## Influences
 
-- [Zou et al., 2024 — *\\attn: Attention-based prompt injection detection*](https://arxiv.org/abs/2411.06483)  
-- [Li et al., 2024 — *ABD: Attention-Based Detection*](https://arxiv.org/abs/2406.05246)  
-- [Wang et al., 2025 — *AttentionDefense: Training-free adversarial prompt detection*](https://arxiv.org/abs/2504.01389)  
-- [Wang et al., 2024 — *DETAM: Dynamic Attention Map Defense*](https://arxiv.org/abs/2409.02085)  
+#### To generate raw data to analyze instability (this step can be skipped if you just want to observe the results)
+```
+
+```
+
+#### To analyze the raw data for optimal tuning for the model (this step can be skipped if you just want to observe the results)
+```
+
+```
+
+#### To run the evaluaitons, run the helper script that runs everything and then look at the results under `runs/`:
+```
+chmod +x run.sh
+./run.sh
+```
+
+#### Or perform an individual run:
+```
+
+```

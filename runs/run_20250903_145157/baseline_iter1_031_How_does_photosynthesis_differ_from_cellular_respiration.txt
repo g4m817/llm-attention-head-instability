@@ -1,0 +1,7 @@
+Photosynthesis and cellular respiration are two crucial processes that occur in living organisms to produce energy and sustain life. They differ in several ways:
+
+1. Purpose: Photosynthesis is a process that converts carbon dioxide and water into glucose, using sunlight as an energy source. On the other hand, cellular respiration is a process that breaks down glucose to produce ATP (adenosine triphosphate), which is the cell's primary energy currency.
+
+2. Location: Photosynthesis primarily takes place in the chloroplasts of plant cells, while cellular respiration occurs in the mitochondria of all eukaryotic cells.
+
+3. Energy

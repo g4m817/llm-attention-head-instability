@@ -1,0 +1,6 @@
+Photosynthesis is a natural process carried out by green plants, algae, and certain bacteria. It involves converting carbon dioxide, water, and sunlight into glucose (a type of sugar) and oxygen.
+
+1. Plants absorb carbon dioxide from the air through tiny pores called stomata.
+2. Water is absorbed through the plant's roots and transported up to the leaves.
+3. In the leaves, a green pigment called chlorophyll, found in structures called chloroplasts, absorbs sunlight.
+4. The absorbed sunlight is used to power a series of chemical reactions, known as the light-dependent reactions, which produce ATP (adenosine triphosphate) and

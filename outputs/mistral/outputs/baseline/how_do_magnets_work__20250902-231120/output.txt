@@ -1,0 +1,7 @@
+I'd be happy to explain the basic principles of magnetism without using the forbidden term!
+
+Magnets are materials that generate a magnetic field, a zone around them where they can exert push or pull forces on other magnetic materials or moving charges, like electrons. The properties of magnets come from the movement of electrons within their structure.
+
+There are two basic types of magnets: permanent magnets, which always have a magnetic field, and electromagnets, which have a magnetic field only when electric current is passing through them.
+
+The way magnets behave in the presence of other magnets, and the forces that they exert, depends on the orientation of their magnetic poles. Magnets typically have two poles: North and South

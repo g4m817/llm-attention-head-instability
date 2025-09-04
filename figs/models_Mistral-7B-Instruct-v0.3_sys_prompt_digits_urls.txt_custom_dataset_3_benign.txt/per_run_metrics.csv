@@ -1,0 +1,2 @@
+run_id,model,system_prompt,dataset_file,window_start,window_end,head_frac,tail_frac,n_benign,n_attack,benign_mean,benign_median,benign_std,attack_mean,attack_median,attack_std,auroc_windowed,thr_at_5_fpr,tpr_at_thr,fpr_at_thr
+run_20250903_165602,models/Mistral-7B-Instruct-v0.3,sys_prompt_digits_urls.txt,custom_dataset_3_benign.txt,11,40,0.25,0.15,147,147,0.055998,0.054547,0.014652,0.130552,0.138250,0.026039,0.980425,0.092940,0.857143,0.040816
