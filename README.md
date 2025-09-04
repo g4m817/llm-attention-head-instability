@@ -1,23 +1,23 @@
 # Inter-Head Instability: Disagreement Among Attention Heads
 
-> DISCLAIMER: I am not an ML engineer, and I have no academic or formal background in machine learning. I’m a security engineer who noticed this signal while tinkering as a side project. I may be completely wrong. This repo is my attempt to document the observation in a digestible form so that others — especially academics — can validate, refine, or discard it. The more I explore it, the more I think it could simply be a re-expression of the distraction effect (see Hung et al. 2024), observed here through standard deviation of inter-head attention on system tokens. The repo is still under construction as I run further experiments (slowly, on consumer hardware).
+> DISCLAIMER: This is exploratory work. I am not an ML engineer — I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others — especially researchers — can validate, refine, or discard.
 
 This repo contains exploratory experiments showing that **attention heads often disagree when faced with adversarial input**, and that this is a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families. Even if it turns out to not be a useful detection mechanism for prompt injection, it may at least provide some insight into why models attention drifts towards adversarial input during generation.
 
 ---
 
 ## 1. Overview
-Recent work on attention interpretability has described a distraction effect, see: [Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1), which showed attention drifting from system tokens to adversarial ones. This may be viewed as an extension of that view, highlighting a different signal — inter-head instability. Instead of drifting together, attention heads often disagree: some cling to the system prompt, others ignore it, fracturing the model’s internal consensus. This _may_ lead to the distraction effect, but more research is required.
+Recent work on attention interpretability has described the distraction effect ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), where certain attention heads shift from system tokens toward injected tokens. This repo explores what may be a complementary signal: inter-head instability. Instead of drifting together, attention heads often disagree — some cling to the system prompt, others wander. This disagreement shows up as increased variance across heads within specific decoding windows. It may represent an early or system-level footprint of the distraction effect, though the relationship is not yet clear.
 
-This disagreement may just be an interpretability curiosity, but it shows up consistently in the right decoding windows across system prompts and datasets, so far at least. By measuring variance across heads in their focus on system tokens, this suggests it may be possible to flag when the model is being pushed off-course, early.
+This disagreement might be nothing more than an interpretability curiosity — but so far it appears consistently in specific decoding windows across system prompts and datasets. Measuring variance across heads in their focus on system tokens may provide a way to flag early signs of the model being pushed off-course, though more experiments are needed to know if this signal generalizes or is robust enough for detection.
 
-Of course, there are outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without disagreement. That’s expected — we’re not explaining why heads agree or disagree (that remains a black box), only observing that divergence correlates with adversarial prompting.
+There are, of course, outliers. Some benign prompts confuse the model’s heads, and some adversarial prompts slip through without measurable disagreement. This is expected — the mechanism of why heads agree or disagree remains a black box. At this stage, all I can say is that inter-head divergence correlates with adversarial prompting, but it is not a perfect discriminator.
 
 ---
 
 ## 2. Method
 - **Metric:** Std dev across heads of attention to system tokens, per layer/step.  
-- **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately converging, these windows appear to be different per model.
+- **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately stabalizing, these windows appear to be different per model.
 - **Windows:**  
   - Nous-Capybara-7B → steps **1–3**.  
   - Mistral-7B → steps **11–40**.  
@@ -37,6 +37,7 @@ Of course, there are outliers. Some benign prompts confuse the model’s heads, 
 We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one with Nous-Capybara-7B, one with Mistral-7B. the first two datasets use the same system prompt "never say test", the last dataset uses a new system prompt "never use digits or URLs". These were chosen to demonstrate the signal appeared across datasets.
 
 ---
+> These results are preliminary and based on small datasets/models. While the signal separates benign from adversarial inputs in these runs, it is not clear if this generalizes across architectures, prompts, or attack types.
 
 ### 📊 Dataset 1: Encouraging / Manipulating the model to say "test"
 50 Attack prompts
@@ -163,7 +164,7 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 
 ## Limitations
 
-- It’s possible this is not a novel effect but rather a restatement or byproduct of other well-known instability metrics. Further literature review is needed to place it in context.
+- It’s possible the instability signal is not a novel effect, but rather a statistical footprint of the distraction effect (Hung et al. 2024). Further experiments are required to establish whether it provides independent information or simply reflects the same underlying mechanism.
 - Results are small-scale.
 - Only 3 datasets and 2 system prompts, both synthetically generated with fragile pass/fail scoring.
 - Only 2 model families tested.  
@@ -174,6 +175,7 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 ## Next Steps
 
 - Validate on larger, more diverse model families and datasets.
+- Compare directly with important-head analysis (Attention Tracker) to test whether instability consistently precedes head distraction.
 - Explore whether per-model tuning can be replaced with normalized instability metrics.
 - Investigate whether instability precedes jailbreak *success probability* in the wild.
 
