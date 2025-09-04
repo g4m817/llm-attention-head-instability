@@ -18,13 +18,12 @@ There are, of course, outliers. Some benign prompts confuse the model’s heads,
 ---
 
 ## 2. Method
-- **Metric:** Std dev across heads of attention to system tokens, per layer/step, within a model-specific window of steps.
 - **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately stabilizing, these windows appear to be different per model.
 - **Windows:**  
   - Nous-Capybara-7B → steps **1–3**.  
   - Mistral-7B → steps **11–40**.  
 - **Layer trimming:** Drop shallowest 25% and deepest 15%. 
-- **Approach:** Take the std of heads each layer of a step, then average them out to arrive at a suspicion score, gated by a threshold informed by data (generally, 0.14). This number has appeared across two model families producing the best mitigation, with the least false positives (1-5% FPR).
+- **Metric:** Take the std of heads each layer of a step, then average them out to arrive at a suspicion score, gated by a threshold informed by data (generally, 0.14). This number has appeared across two model families producing the best mitigation, with the least false positives (1-5% FPR).
 - **Model Settings:** 
   - These settings were chosen to remove variance to confirm and analyze the signal, further research is required to determine if the signal becomes unmeasurable noise under different model configurations.
   - Temperature: 0
