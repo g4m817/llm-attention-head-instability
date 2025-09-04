@@ -17,7 +17,7 @@ Of course, there are outliers. Some benign prompts confuse the model’s heads, 
 
 ## 2. Method
 - **Metric:** Std dev across heads of attention to system tokens, per layer/step.  
-- **Why the chosen step windows:** Different models *appear* to reach disagreement at different windows before ultimately converging on a chosen choice of attention, these windows appear to be different per model.
+- **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately converging, these windows appear to be different per model.
 - **Windows:**  
   - Nous-Capybara-7B → steps **1–3**.  
   - Mistral-7B → steps **11–40**.  
