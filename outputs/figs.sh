@@ -1,4 +1,4 @@
-python3.11 aggregate_instability_figs.py \
+python aggregate_instability_figs.py \
   --benign-root mistral/outputs/baseline \
   --attacks-root mistral/outputs/tests \
   --outdir mistral/figs \
@@ -8,7 +8,7 @@ python3.11 aggregate_instability_figs.py \
   --scatter-k 29 --k-min 11 --k-max 40 \
   --summary-csv mistral/summary.csv
 
-python3.11 aggregate_instability_figs.py \
+python aggregate_instability_figs.py \
   --benign-root nous/outputs/baseline \
   --attacks-root nous/outputs/tests \
   --outdir nous/figs \

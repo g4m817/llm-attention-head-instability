@@ -252,11 +252,56 @@ models/Mistral-7B-Instruct-v0.3
 
 #### Install
 ```
+python -m venv dh
+source dh/bin/activate
 pip install -r requirements.txt
 ```
 
-#### To run the evaluations, run the helper script that runs everything and then look at the results under `runs/`:
+#### To run all evaluations, run the helper script that runs everything and then look at the results under `runs/`:
 ```
 chmod +x run.sh
 ./run.sh
+```
+
+#### To run an invidiual run:
+```
+python detect_head.py --threshold 0.145347 --lookback-steps 3 --mid-high-frac 0.25 --tail-cut-frac 0.15 --system-prompt-file system_prompts/sys_prompt_never_say_test.txt --test-prompts-file datasets/custom_dataset_attacks.txt --baseline-prompts-file datasets/custom_dataset_benign.txt --compare-ungated --model models/Nous-Capybara-7B-V1.9  --fail-case test --iterations 3
+```
+
+#### To gather stats to analyze for an instability window run gather.py with the following options
+```
+  --model MODEL
+  --system-prompt-file SYSTEM_PROMPT_FILE
+  --baseline-prompts-file BASELINE_PROMPTS_FILE
+  --test-prompts-file TEST_PROMPTS_FILE
+  --mode {baseline,tests,single}
+  --prompt PROMPT
+  --iterations ITERATIONS
+  --outputs-root OUTPUTS_ROOT
+  --max-new-tokens MAX_NEW_TOKENS
+  --temperature TEMPERATURE
+  --top-k TOP_K
+  --top-p TOP_P         -1 disables; else 0<top_p<=1
+  --mid-high-frac MID_HIGH_FRAC
+  --seed SEED
+  --no-per-head
+  --no-csv
+```
+
+#### To analyze those stats for instability spike windows, or modify analyze.sh for specific options
+```
+cd outputs
+chmod +x analyze.sh
+./analyze.sh
+```
+
+#### To generate specific graphs to observe the instability from these generalized results, from the same directory
+```
+chmod +x figs.sh
+./figs.sh
+```
+
+#### To generate useful figures from your runs under `runs/`, run from the root:
+```
+python make_instability_figs.py --runs runs --outdir figs
 ```
