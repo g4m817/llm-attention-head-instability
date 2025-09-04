@@ -51,28 +51,31 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Nous signal emerges immediately; Mistral signal ramps later but reaches similar AUROC.  
 
 **Figures:**  
+###### ROC
 ![ROC Nous](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
 ![ROC Mistral](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
 
 ---
-
-- ![Nous Violin](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
+###### Violin
+![Nous Violin](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
 ![Mistral Violin](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
 
 ---
-
-- ![Nous Scatter](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
+###### Scatter
+![Nous Scatter](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
 ![Mistral Scatter](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
 
 ---
-
-- ![Nous AUROC](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
+###### AUROC
+![Nous AUROC](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
 ![Mistral AUROC](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
 
 ---
+###### Nous Benign vs Attack Heatmap
+![Nous Benign Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
+![Nous Attack Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png)
 
-- ![Nous Benign Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
-- ![Nous Attack Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png)
+###### Mistral Benign vs Attack Heatmap
 ![Mistral Benign Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
 ![Mistral Attack Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png) 
 
@@ -89,10 +92,33 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Nous shows noisy early window; Mistral stabilizes around step ~15.  
 
 **Figures:**  
-- ROC curves (side-by-side).  
-- Violin distributions → show larger overlap (harder dataset).  
-- Step-wise AUROC → signal weaker than Dataset 1, but still >0.7 AUROC in both.  
-- Heatmaps → scattered head disagreement, less focused than Dataset 1.  
+###### ROC
+![ROC Nous](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/roc.png)
+![ROC Mistral](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/roc.png)
+
+---
+###### Violin
+![Nous Violin](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/violin_windowed.png)
+![Mistral Violin](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/violin_windowed.png)
+
+---
+###### Scatter
+![Nous Scatter](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/scatter_windowed.png)
+![Mistral Scatter](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/scatter_windowed.png)
+
+---
+###### AUROC
+![Nous AUROC](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/stepwise_auroc.png)
+![Mistral AUROC](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/stepwise_auroc.png)
+
+---
+###### Nous Benign vs Attack Heatmap
+![Nous Benign Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/mean_heatmap_benign.png)
+![Nous Attack Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/mean_heatmap_attack.png)
+
+###### Mistral Benign vs Attack Heatmap
+![Mistral Benign Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/mean_heatmap_benign.png)
+![Mistral Attack Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_2_benign.txt/mean_heatmap_attack.png) 
 
 ---
 
@@ -107,10 +133,33 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Both models show strong separation again, though signal shape differs: Nous immediate, Mistral gradual.  
 
 **Figures:**  
-- ROC curves (side-by-side).  
-- Violin plots → clear distributions, outliers visible.  
-- Step-wise AUROC → Nous peaks fast, Mistral climbs gradually.  
-- Heatmaps → instability spread across more layers than lexical ban case.  
+###### ROC
+![ROC Nous](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/roc.png)
+![ROC Mistral](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/roc.png)
+
+---
+###### Violin
+![Nous Violin](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/violin_windowed.png)
+![Mistral Violin](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/violin_windowed.png)
+
+---
+###### Scatter
+![Nous Scatter](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/scatter_windowed.png)
+![Mistral Scatter](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/scatter_windowed.png)
+
+---
+###### AUROC
+![Nous AUROC](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/stepwise_auroc.png)
+![Mistral AUROC](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/stepwise_auroc.png)
+
+---
+###### Nous Benign vs Attack Heatmap
+![Nous Benign Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/mean_heatmap_benign.png)
+![Nous Attack Heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/mean_heatmap_attack.png)
+
+###### Mistral Benign vs Attack Heatmap
+![Mistral Benign Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/mean_heatmap_benign.png)
+![Mistral Attack Heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_digits_urls.txt_custom_dataset_3_benign.txt/mean_heatmap_attack.png) 
 
 ---
 
@@ -152,24 +201,13 @@ models/Nous-Capybara-7B-V1.9
 models/Mistral-7B-Instruct-v0.3
 ```
 
-
-#### To generate raw data to analyze instability (this step can be skipped if you just want to observe the results)
+#### Install
 ```
-
-```
-
-#### To analyze the raw data for optimal tuning for the model (this step can be skipped if you just want to observe the results)
-```
-
+pip install -r requirements.txt
 ```
 
 #### To run the evaluaitons, run the helper script that runs everything and then look at the results under `runs/`:
 ```
 chmod +x run.sh
 ./run.sh
-```
-
-#### Or perform an individual run:
-```
-
 ```
