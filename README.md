@@ -2,7 +2,9 @@
 
 > DISCLAIMER: This is exploratory work. I am not an ML engineer — I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others — especially researchers — can validate, refine, or discard.
 
-This repo contains exploratory experiments showing that **attention heads often disagree when faced with adversarial input**, and that this is a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families. Even if it turns out to not be a useful detection mechanism for prompt injection, it may at least provide some insight into why models attention drifts towards adversarial input during generation.
+This repo contains exploratory experiments showing that **attention heads often disagree when faced with adversarial input**, and that this may provide a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families.
+
+Even if this instability signal proves too noisy or imprecise to serve as a practical security measure, it may still be useful for interpretability. In particular, the instability windows may highlight when during decoding a model is actively processing system instructions, when its heads disagree on that focus, and when it stabilizes toward either following those instructions or drifting toward adversarial input.
 
 ---
 
@@ -17,12 +19,12 @@ There are, of course, outliers. Some benign prompts confuse the model’s heads,
 
 ## 2. Method
 - **Metric:** Std dev across heads of attention to system tokens, per layer/step.  
-- **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately stabalizing, these windows appear to be different per model.
+- **Why the chosen step windows:** Different models *appear* to reach instability at different windows before ultimately stabilizing, these windows appear to be different per model.
 - **Windows:**  
   - Nous-Capybara-7B → steps **1–3**.  
   - Mistral-7B → steps **11–40**.  
 - **Layer trimming:** Drop shallowest 25% and deepest 15%. 
-- **Approach:** Take the std of heads each layer of a step, then average them out to arrive at a suspcion score, gated by a threshold informed by data (generally, 0.14). This number has appeared across two model families producing the best mitigation, with the least false positives (1-5% FPR).
+- **Approach:** Take the std of heads each layer of a step, then average them out to arrive at a suspicion score, gated by a threshold informed by data (generally, 0.14). This number has appeared across two model families producing the best mitigation, with the least false positives (1-5% FPR).
 - **Model Settings:** 
   - These settings were chosen to remove variance to confirm and analyze the signal, further research is required to determine if the signal becomes unmeasurable noise under different model configurations.
   - Temperature: 0
@@ -168,7 +170,7 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Results are small-scale.
 - Only 3 datasets and 2 system prompts, both synthetically generated with fragile pass/fail scoring.
 - Only 2 model families tested.  
-- Thresholds/steps tuned per model; no universal setting yet, I suspect it may not be possible to find universal settings, at least for the start/end windows.
+- Thresholds/steps tuned per model; no universal setting yet, I suspect it may not be possible to find universal settings, at least for the instability windows identified so far.
 
 ---
 
@@ -207,7 +209,7 @@ models/Mistral-7B-Instruct-v0.3
 pip install -r requirements.txt
 ```
 
-#### To run the evaluaitons, run the helper script that runs everything and then look at the results under `runs/`:
+#### To run the evaluations, run the helper script that runs everything and then look at the results under `runs/`:
 ```
 chmod +x run.sh
 ./run.sh
