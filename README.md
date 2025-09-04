@@ -1,8 +1,6 @@
-# WARNING: This repository is under heavy work, I've finished my initial experiments, but aggregating and displaying the data is taking a really long time! I'll remove this banner when it is complete.
-
 # Inter-Head Instability: Disagreement Among Attention Heads
 
-> DISCLAIMER: I am not an ML engineer, I have no academic or formal background in ML. I am a security engineer that was only tinkering with this as a side-project when I observed the signal. I could be completely wrong, but I'm attempting to formalize it into a digestable form to hopefully allow academics to take it forward to validate/improve/discard as meaningless. The more work I do the more I think it may just be the distraction effect re-discovered through std dev of inter-heads attention on system share.
+> DISCLAIMER: I am not an ML engineer, I have no academic or formal background in ML. I am a security engineer that was only tinkering with this as a side-project when I observed the signal. I could be completely wrong, but I'm attempting to formalize it into a digestable form to hopefully allow academics to take it forward to validate/improve/discard as meaningless. The more work I do the more I think it may just be the distraction effect re-discovered through std dev of inter-heads attention on system share. The repo is still under-construction as I run more experiments (slowly, consumer hardware, lol).
 
 This repo contains experiments showing that **attention heads often disagree when faced with adversarial input**, and that this is a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families. Even if it turns out to not be a useful detection mechanism for prompt injection, it may at least provide some insight into why models attention drifts towards adversarial input during generation.
 
