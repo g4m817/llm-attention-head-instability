@@ -59,10 +59,6 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - AUROC: Nous peaks in 1–3; Mistral ramps and stabilizes 11–40.
 - Heatmaps: Early band (Nous) vs. mid/late band (Mistral).
 
-#### Nous (steps 1–3) vs. Mistral (steps 11–40)  
-- Both models show clear separation of attack vs. benign.  
-- Nous signal emerges immediately; Mistral signal ramps later but reaches similar AUROC.  
-
 **Figures:**  
 ###### ROC
 ![ROC Nous](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
@@ -116,10 +112,6 @@ We evaluate across **3 datasets × 2 models**. Each dataset has two runs: one wi
 - Distributions: Nous gap remains visible (0.0613→0.1427); Mistral gap narrower (0.1100→0.1434).
 - AUROC: Nous early; Mistral stabilizes ~step 15.
 - Heatmaps: Softer contrasts; early (Nous) vs. mid/late (Mistral) persists.
-
-#### Nous vs. Mistral  
-- Obfuscations reduce separation, but the instability signal still distinguishes attack vs. benign.  
-- Nous shows noisy early window; Mistral stabilizes around step ~15.  
 
 **Figures:**  
 ###### ROC
