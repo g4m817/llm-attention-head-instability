@@ -1,12 +1,10 @@
 # Inter-Head Instability: A Signal of Attention Disagreement in LLMs
 
-> DISCLAIMER: This is exploratory work. I am not an ML engineer, I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others, especially researchers, can validate, refine, or discard.
+> DISCLAIMER: This is exploratory work. I am not an ML engineer, I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others, especially researchers, can validate, refine, or discard. If I've misstated something, please tell me via an issue so I can correct it!
 
 This repo contains exploratory experiments showing that **attention heads often disagree when faced with adversarial input**, and that this may provide a useful signal of prompt injection attempts. Although, more research needs to be conducted to determine if its useful across datasets / instructions and model families.
 
 Even if this instability signal proves too noisy or imprecise to serve as a practical security measure, it may still be useful for interpretability. In particular, the instability windows may highlight when during decoding a model is actively processing system instructions, when its heads disagree on that focus, and when it stabilizes toward either following those instructions or drifting toward adversarial input.
-
-If I've misstated something, please tell me via an issue so I can correct it!
 
 ---
 
