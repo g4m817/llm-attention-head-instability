@@ -1,4 +1,4 @@
-# Inter-Head Instability: Disagreement Among Attention Heads
+# Inter-Head Instability: A Signal of Attention Disagreement in LLMs
 
 > DISCLAIMER: This is exploratory work. I am not an ML engineer, I’m a security engineer who noticed this signal while tinkering with prompt injection defenses. These experiments may be wrong or incomplete, but I wanted to document them so others, especially researchers, can validate, refine, or discard.
 
