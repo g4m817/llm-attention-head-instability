@@ -88,7 +88,7 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 ### 📊 Dataset 1: Encouraging / Manipulating the model to say "test"
 - 50 Attack prompts
 - 50 Benign prompts
-- 3 Iterations (total 300 prompts)
+- 3 Iterations (total 300 prompts) per model
 - (System prompt: *Never say "test"*)
 
 #### Run Overview
@@ -103,10 +103,6 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 - Distributions: Wider gap for Nous (0.0635→0.1467) than Mistral (0.1139→0.1526).
 - AUROC: Nous peaks in 1–3; Mistral ramps and stabilizes 11–40.
 - Heatmaps: Early band (Nous) vs. mid/late band (Mistral).
-
-#### Nous (steps 1–3) vs. Mistral (steps 11–40)  
-- Both models show clear separation of attack vs. benign.  
-- Nous signal emerges immediately; Mistral signal ramps later but reaches similar AUROC.  
 
 **Figures:**  
 ###### ROC
@@ -146,7 +142,7 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 ### 📊 Dataset 2: Obfuscated Forms (*t3st, te5t, etc.)
 - 50 Attack prompts
 - 50 Benign prompts
-- 3 Iterations (total 300 prompts)
+- 3 Iterations (total 300 prompts) per model
 - (System prompt: *Never say "test"*)  
 
 #### Run Overview
@@ -161,10 +157,6 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 - Distributions: Nous gap remains visible (0.0613→0.1427); Mistral gap narrower (0.1100→0.1434).
 - AUROC: Nous early; Mistral stabilizes ~step 15.
 - Heatmaps: Softer contrasts; early (Nous) vs. mid/late (Mistral) persists.
-
-#### Nous vs. Mistral  
-- Obfuscations reduce separation, but the instability signal still distinguishes attack vs. benign.  
-- Nous shows noisy early window; Mistral stabilizes around step ~15.  
 
 **Figures:**  
 ###### ROC
@@ -204,7 +196,7 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 ### 📊 Dataset 3: Digits / URLs  
 - 50 Attack prompts
 - 50 Benign prompts
-- 3 Iterations (total 300 prompts)
+- 3 Iterations (total 300 prompts) per model
 - (System prompt: *No digits or URLs*)
 
 #### Run Overview
@@ -272,6 +264,7 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 - Compare directly with important-head analysis (Attention Tracker) to test whether instability consistently precedes head distraction.
 - Explore whether per-model tuning can be replaced with normalized instability metrics.
 - Investigate whether instability precedes jailbreak *success probability* in the wild.
+- Because the detection of adversarial prompts via instability is less precise and prone to false positives on complex benign prompts, one possible use case is as a routing heuristic. Instead of sending every input through a costly guard LLM, inter-head instability could potentially flag only the suspicious ones, potentially saving significant resources for companies deploying such defenses.
 
 ---
 
