@@ -52,7 +52,7 @@ The complex-benign set stresses ingestion/parsing difficulty rather than adversa
 > These results are preliminary and based on small datasets/models. While the signal separates benign from adversarial inputs in these runs, it is not clear if this generalizes across architectures, prompts, or attack types.
 
 ### 📊 Testing For Pitfalls: Complex Benign Input / Entropy / Etc.
-This dataset includes unique graphs compared to the other datasets, the goal of this set was to ensure the signal didn't break down with complex benign prompts, which would indicate it only signals complexity that leads to head disagreement. Additioally, we wanted to ensure this was not just entropy and compare it to head agreement.
+This dataset includes unique graphs compared to the other datasets, the goal of this set was to ensure the signal didn't break down with complex benign prompts, which would indicate it only signals complexity that leads to head disagreement. Additionally, we wanted to ensure this was not just entropy and compare it to head agreement.
 
 #### Run Overview
 | run_id             | model                        | system_prompt                | dataset_file                        | window_start | window_end | head_frac | tail_frac | n_benign | n_attack | benign_mean | benign_median | benign_std | attack_mean | attack_median | attack_std | auroc_windowed | thr_at_5_fpr | tpr_at_thr | fpr_at_thr | pearson_instability_entropy | spearman_instability_entropy |
@@ -269,7 +269,6 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 - Compare directly with important-head analysis (Attention Tracker) to test whether instability consistently precedes head distraction.
 - Explore whether per-model tuning can be replaced with normalized instability metrics.
 - Investigate whether instability precedes jailbreak *success probability* in the wild.
-- Because the detection of adversarial prompts via instability is less precise and prone to false positives on complex benign prompts, one possible use case is as a routing heuristic. Instead of sending every input through a costly guard LLM, inter-head instability could potentially flag only the suspicious ones, potentially saving significant resources for companies deploying such defenses.
 
 ---
 
