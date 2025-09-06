@@ -11,10 +11,10 @@ Across multiple datasets and two model families, adversarial prompts (that try t
 
 What this looks good for:
 - Lightweight defensive layer for prompt injections w/ automatic gating and/or alerting.
-- Routing heuristic: flag likely instruction conflict early (before routing suspcious prompts to heavier guards/tools).
+- Routing heuristic: flag likely instruction conflict early (before routing suspicious prompts to heavier guards/tools).
 - Interpretability lens: visualize where/when heads coordinate vs. fragment under conflict.
 
-I’m not claiming novelty over Attention Tracker; this signal may be a system-level fingerprint of the distraction effect. The goal here is to document a durable, testable effect. At the moment, the relaitonship to the distraction effect remains unclear.
+I’m not claiming novelty over Attention Tracker; this signal may be a system-level fingerprint of the distraction effect. While distraction is a head-level shift of focus, instability here measures disagreement across heads when the system prompt and user input conflict. The goal here is to document a durable, testable effect. At the moment, the relationship to the distraction effect remains unclear.
 
 ---
 
@@ -52,7 +52,7 @@ The complex-benign set stresses ingestion/parsing difficulty rather than adversa
 > These results are preliminary and based on small datasets/models. While the signal separates benign from adversarial inputs in these runs, it is not clear if this generalizes across architectures, prompts, or attack types.
 
 ### 📊 Testing For Pitfalls: Complex Benign Input / Entropy / Etc.
-This dataset includes unique graphs compared to the other datasets, the goal of this set was to ensure the signal didnt break down with complex benign prompts, which would indicate it only signals complexity that leads to head disagreement. Additioally, we wanted to ensure this was not just entropy and compare it to head agreement.
+This dataset includes unique graphs compared to the other datasets, the goal of this set was to ensure the signal didn't break down with complex benign prompts, which would indicate it only signals complexity that leads to head disagreement. Additioally, we wanted to ensure this was not just entropy and compare it to head agreement.
 
 #### Run Overview
 | run_id             | model                        | system_prompt                | dataset_file                        | window_start | window_end | head_frac | tail_frac | n_benign | n_attack | benign_mean | benign_median | benign_std | attack_mean | attack_median | attack_std | auroc_windowed | thr_at_5_fpr | tpr_at_thr | fpr_at_thr | pearson_instability_entropy | spearman_instability_entropy |
