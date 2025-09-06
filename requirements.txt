@@ -5,3 +5,5 @@ matplotlib
 scikit-learn
 pandas
 seaborn
+sentencepiece
+protobuf

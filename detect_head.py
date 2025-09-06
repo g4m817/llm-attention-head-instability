@@ -53,27 +53,18 @@ def has_chat_template(tokenizer) -> bool:
     return getattr(tokenizer, "chat_template", None) not in (None, "")
 
 def build_manual_conversation(system_prompt: str, user_prompt: str) -> Tuple[str, str, str]:
-    """Return (convo_text, sys_text, sys_user_text) using manual tags."""
     sys_text = f"<|system|>\n{system_prompt}\n"
     user_text = f"<|user|>\n{user_prompt}\n"
     asst_text = "<|assistant|>\n"
     convo_text = sys_text + user_text + asst_text
-    sys_user_text = sys_text + user_text  # without assistant part
+    sys_user_text = sys_text + user_text
     return convo_text, sys_text, sys_user_text
 
 def render_conversation(tokenizer, system_prompt: str, user_prompt: str) -> Tuple[str, str, str]:
-    """
-    Produce three texts with the *exact* formatting used in production:
-      - convo_text: system + user + assistant generation prefix
-      - sys_text:   system only (same template style)
-      - su_text:    system + user (same template style, no assistant prefix)
-    """
     if has_chat_template(tokenizer):
         msgs_sys = [{"role": "system", "content": system_prompt}]
         msgs_su  = [{"role": "system", "content": system_prompt},
                     {"role": "user",    "content": user_prompt}]
-
-        # Note: add_generation_prompt=True only for the full conversation used at runtime
         convo_text = tokenizer.apply_chat_template(msgs_su, tokenize=False, add_generation_prompt=True)
         sys_text   = tokenizer.apply_chat_template(msgs_sys, tokenize=False, add_generation_prompt=False)
         su_text    = tokenizer.apply_chat_template(msgs_su,  tokenize=False, add_generation_prompt=False)
@@ -81,39 +72,25 @@ def render_conversation(tokenizer, system_prompt: str, user_prompt: str) -> Tupl
     else:
         return build_manual_conversation(system_prompt, user_prompt)
 
-def find_subseq(full: List[int], sub: List[int], start: int = 0) -> int:
-    if not sub:
-        return -1
-    lim = len(full) - len(sub)
-    i = start
-    while i <= lim:
-        if full[i:i+len(sub)] == sub:
-            return i
-        i += 1
-    return -1
-
 def build_inputs_and_masks(
     tokenizer,
     system_prompt: str,
     user_prompt: str,
     device: torch.device
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    # Render exactly as used for generation
     convo_text, _, _ = render_conversation(tokenizer, system_prompt, user_prompt)
 
-    # Char spans for raw system/user bodies inside the rendered convo
     sys_a = convo_text.find(system_prompt)
     if sys_a == -1: sys_a = 0
     sys_b = sys_a + len(system_prompt)
 
-    usr_a = convo_text.find(user_prompt, sys_b)  # user should come after system
+    usr_a = convo_text.find(user_prompt, sys_b)
     if usr_a == -1: usr_a = sys_b
     usr_b = usr_a + len(user_prompt)
 
-    # Tokenize once with specials + offsets (the exact ids you’ll feed the model)
     enc = tokenizer(convo_text, return_tensors="pt", add_special_tokens=True, return_offsets_mapping=True)
     input_ids = enc["input_ids"].to(device)
-    offsets = enc["offset_mapping"][0].tolist()  # (start,end) per token in convo_text
+    offsets = enc["offset_mapping"][0].tolist()
 
     T = input_ids.shape[1]
     sys_mask = torch.zeros((1, T), dtype=torch.bool, device=device)
@@ -121,10 +98,8 @@ def build_inputs_and_masks(
 
     def mark(mask, a, b):
         for i, (s, e) in enumerate(offsets):
-            # some specials report (0,0) — skip
-            if s == e: 
+            if s == e:
                 continue
-            # overlap of [s,e) with [a,b)
             if not (e <= a or s >= b):
                 mask[0, i] = True
 
@@ -138,18 +113,11 @@ def build_generation_inputs(
     user_prompt: str,
     device: torch.device
 ) -> Dict[str, torch.Tensor]:
-    """
-    Use the exact same rendered conversation and add_special_tokens=True for generation.
-    Ensures BOTH input_ids and attention_mask live on the same device.
-    """
     convo_text, _, _ = render_conversation(tokenizer, system_prompt, user_prompt)
     enc = tokenizer(convo_text, add_special_tokens=True, return_tensors="pt")
     input_ids = enc["input_ids"].to(device)
     attn = enc.get("attention_mask", None)
-    if attn is None:
-        attention_mask = torch.ones_like(input_ids, device=device)
-    else:
-        attention_mask = attn.to(device)
+    attention_mask = attn.to(device) if attn is not None else torch.ones_like(input_ids, device=device)
     return {"input_ids": input_ids, "attention_mask": attention_mask}
 
 # ---------------- Sampling helpers ----------------
@@ -167,7 +135,6 @@ def _apply_top_p_mask(logits: torch.Tensor, top_p: float) -> torch.Tensor:
     return masked
 
 def sample_from_logits(logits: torch.Tensor, temperature: Optional[float], top_k: Optional[int], top_p: Optional[float]) -> int:
-    # Greedy if no stochasticity requested
     if (temperature is None or temperature <= 0) and (not top_k or top_k <= 0) and (top_p is None or not (0 < top_p < 1)):
         return int(torch.argmax(logits, dim=-1).item())
 
@@ -194,7 +161,48 @@ def slugify(s: str, maxlen: int = 60) -> str:
 def want_sampling(temperature: Optional[float], top_k: Optional[int], top_p: Optional[float]) -> bool:
     return (temperature is not None and temperature > 0) or (top_k is not None and top_k > 0) or (top_p is not None and 0 < top_p < 1)
 
-# ---------------- Core: compute head-instability score ----------------
+# ---------------- Core: compute head-instability + extras ----------------
+@torch.no_grad()
+def _mean_head_corr(focus: torch.Tensor) -> float:
+    """
+    focus: [H] or [H] per layer; here we'll pass focus per layer.
+    Returns mean off-diagonal Pearson correlation across heads for a single layer.
+    Fallbacks to NaN-safe zeros if degenerate.
+    """
+    f = focus.detach()
+    H = f.shape[0]
+    if H < 2:
+        return float("nan")
+    # z-score across heads
+    mu = f.mean()
+    sd = f.std(unbiased=False).clamp_min(1e-6)
+    z = (f - mu) / sd
+    # pairwise corr ~ cosine of z vectors; since it's 1D we just return 1.0
+    # But we want correlation ACROSS heads; with 1D per head, use centered covariance on a dummy 2D:
+    # Better: compute correlation across heads by bootstrapping small perturbations is overkill.
+    # Instead, approximate "agreement" by 1 - normalized variance (coarse but stable).
+    # We'll supply a more stable proxy below at aggregate level; here return NaN and compute per-step mean elsewhere.
+    return float("nan")
+
+def _layerwise_mean_head_corr(focus_layerwise: torch.Tensor) -> float:
+    """
+    focus_layerwise: [L', H] — system-share per head after layer trimming for a single step.
+    We compute mean pairwise correlation by building the HxL' matrix and taking
+    the mean correlation across head vectors over layers.
+    """
+    # shape: [L', H] -> transpose to [H, L']
+    X = focus_layerwise.transpose(0, 1)  # [H, L']
+    H, D = X.shape
+    if H < 2 or D < 1:
+        return float("nan")
+    X = X - X.mean(dim=1, keepdim=True)
+    X = X / (X.std(dim=1, keepdim=True) + 1e-6)
+    # correlation matrix across heads
+    C = (X @ X.transpose(0,1)) / D  # [H,H]
+    # exclude diagonal
+    off = (C.sum() - torch.diagonal(C).sum()) / max(1, (H * H - H))
+    return float(off.item())
+
 @torch.no_grad()
 def score_head_instability(
     model,
@@ -209,16 +217,16 @@ def score_head_instability(
     mid_high_frac: float = 0.33,
     tail_cut_frac: float = 0.10,
     start_step: int = 1
-) -> Tuple[float, str, Optional[np.ndarray]]:
+) -> Tuple[float, str, Optional[np.ndarray], Optional[np.ndarray], Optional[np.ndarray]]:
     """
-    Returns (instability_score, generated_text_if_not_blocked_yet, H [steps x layers])
+    Returns:
+      (instability_score, generated_text_if_not_blocked_yet,
+       H_std [steps x layers], entropy_series [steps], headcorr_series [steps])
 
-    NOTE: This function forces GREEDY decoding for metric collection to reduce variance.
+    NOTE: Forces GREEDY decoding for metric collection to reduce variance.
     """
-    # Build inputs + masks from the same rendering & tokenization (with specials)
-    input_ids, sys_mask, usr_mask = build_inputs_and_masks(tokenizer, system_prompt, user_prompt, model.device)
+    input_ids, sys_mask, _ = build_inputs_and_masks(tokenizer, system_prompt, user_prompt, model.device)
 
-    # Prefill
     pre = model(
         input_ids=input_ids,
         attention_mask=torch.ones_like(input_ids, device=model.device),
@@ -229,7 +237,6 @@ def score_head_instability(
     past = pre.past_key_values
     num_layers = len(pre.attentions) if pre.attentions is not None else 0
 
-    # Force GREEDY for the metric path
     greedy_temp = 0.0
     greedy_k = None
     greedy_p = None
@@ -239,10 +246,17 @@ def score_head_instability(
     generated = [first_tok]
 
     head_std_steps: List[List[float]] = []
+    entropy_steps: List[float] = []
+    headcorr_steps: List[float] = []
+
     eos_id = getattr(tokenizer, "eos_token_id", None)
     last_input = torch.tensor([[first_tok]], device=model.device, dtype=torch.long)
 
+    # Prepare layer trimming bounds (apply per-step later)
     max_steps = max(1, min(lookback_steps, max_new_tokens - 1))
+    K_prompt = input_ids.shape[1]
+    sys_idx = sys_mask[0, :K_prompt].nonzero(as_tuple=False).squeeze(-1)
+
     for _t in range(max_steps):
         out = model(
             input_ids=last_input,
@@ -255,10 +269,17 @@ def score_head_instability(
         if out.attentions is None:
             break
 
-        K_prompt = input_ids.shape[1]
-        sys_idx = sys_mask[0, :K_prompt].nonzero(as_tuple=False).squeeze(-1)
+        # --- entropy (per-step, from logits) ---
+        logits_t = out.logits[:, -1, :]  # [1, V]
+        probs_t = torch.softmax(logits_t, dim=-1)
+        # categorical entropy: -sum p log p
+        ent_t = -torch.sum(probs_t * torch.log(probs_t.clamp_min(1e-12)), dim=-1).item()
+        entropy_steps.append(float(ent_t))
 
+        # --- per-layer head variance on system-share, plus head-agreement ---
         layer_vals = []
+        # Also collect layerwise per-head focus to compute agreement
+        focus_layers = []
         for L in range(num_layers):
             attn = out.attentions[L]                 # [1,H,1,K_total]
             head_rows = attn[0, :, 0, :K_prompt]     # [H, K_prompt]
@@ -266,11 +287,26 @@ def score_head_instability(
             if sys_idx.numel() == 0:
                 sys_share_heads = torch.zeros((head_rows.shape[0],), device=model.device)
             else:
-                sys_share_heads = (head_rows[:, sys_idx].sum(dim=-1) / denom.squeeze(-1))
-            std_val = torch.std(sys_share_heads).item()
+                sys_share_heads = (head_rows[:, sys_idx].sum(dim=-1) / denom.squeeze(-1))  # [H]
+            std_val = torch.std(sys_share_heads, unbiased=False).item()
             layer_vals.append(std_val)
+            focus_layers.append(sys_share_heads)
+
         head_std_steps.append(layer_vals)
 
+        # Compute head agreement across trimmed layers for this step
+        H_step = torch.stack(focus_layers, dim=0)  # [L, H]
+        L_total = H_step.shape[0]
+        ls = max(0, int(L_total * mid_high_frac))
+        le = max(ls + 1, int(L_total * (1.0 - tail_cut_frac)))
+        le = min(le, L_total)
+        H_trim = H_step[ls:le, :] if le > ls else H_step[ls:, :]
+        if H_trim.numel() == 0:
+            headcorr_steps.append(float("nan"))
+        else:
+            headcorr_steps.append(_layerwise_mean_head_corr(H_trim))
+
+        # Greedy step
         tok = sample_from_logits(out.logits[:, -1, :], greedy_temp, greedy_k, greedy_p)
         generated.append(tok)
         if eos_id is not None and tok == eos_id:
@@ -278,23 +314,24 @@ def score_head_instability(
         last_input = torch.tensor([[tok]], device=model.device, dtype=torch.long)
 
     if not head_std_steps:
-        return 0.0, tokenizer.decode(generated, skip_special_tokens=True).strip(), None
+        gen_text = tokenizer.decode(generated, skip_special_tokens=True).strip()
+        return 0.0, gen_text, None, None, None
 
-    H = np.array(head_std_steps)  # [steps, layers]
+    H = np.array(head_std_steps, dtype=np.float32)  # [steps, layers]
+    E = np.array(entropy_steps, dtype=np.float32)   # [steps]
+    C = np.array(headcorr_steps, dtype=np.float32)  # [steps]
 
     # Layer slice: keep mid/high (>= mid_high_frac) but drop last tail_cut_frac
     L = H.shape[1]
     start = max(2, int(L * mid_high_frac))
-    end = max(start + 1, int(L * (1.0 - tail_cut_frac)))  # ensure non-empty
-    if start >= L:
-        H_slice = H  # fallback
-    else:
-        H_slice = H[:, start:end] if end > start else H[:, start:]
+    end = max(start + 1, int(L * (1.0 - tail_cut_frac)))
+    end = min(end, L)
+    H_slice = H[:, start:end] if end > start else H[:, start:]
 
     t0 = min(start_step, H_slice.shape[0]-1)
     instability_score = float(H_slice[t0:, :].mean())
     gen_text = tokenizer.decode(generated, skip_special_tokens=True).strip()
-    return instability_score, gen_text, H
+    return instability_score, gen_text, H, E, C
 
 # ---------------- Generation (gated & ungated) ----------------
 @torch.no_grad()
@@ -306,11 +343,11 @@ def guarded_generate(
     threshold: float,
     lookback_steps: int,
     **gen_kwargs
-) -> Tuple[str, float, Optional[np.ndarray], bool]:
+) -> Tuple[str, float, Optional[np.ndarray], Optional[np.ndarray], Optional[np.ndarray], bool]:
     """
-    Returns (final_text, score, H, blocked_flag)
+    Returns (final_text, score, H_std, entropy_series, headcorr_series, blocked_flag)
     """
-    score, partial, H = score_head_instability(
+    score, partial, H, E, C = score_head_instability(
         model, tokenizer, system_prompt, user_prompt,
         lookback_steps=lookback_steps,
         mid_high_frac=gen_kwargs.get("mid_high_frac", 0.33),
@@ -319,16 +356,13 @@ def guarded_generate(
         temperature=gen_kwargs.get("temperature", TEMPERATURE),
         top_k=gen_kwargs.get("top_k", TOP_K),
         top_p=gen_kwargs.get("top_p", TOP_P),
-        start_step=gen_kwargs.get("start_step", 1)
+        start_step=gen_kwargs.get("start_steps", 1)
     )
     print(f"[Metric] head-instability score = {score:.3f} (threshold {threshold:.3f})")
     if score >= threshold:
-        return f"{BLOCKED_PREFIX} potential prompt injection detected.", score, H, True
+        return f"{BLOCKED_PREFIX} potential prompt injection detected.", score, H, E, C, True
 
-    # For final text, use user's generation params (sampling or greedy—your choice)
     inputs = build_generation_inputs(tokenizer, system_prompt, user_prompt, model.device)
-
-    # Safety: ensure both tensors are on the same device as the model
     inputs["input_ids"] = inputs["input_ids"].to(model.device)
     inputs["attention_mask"] = inputs["attention_mask"].to(model.device)
     do_sample = want_sampling(gen_kwargs.get("temperature", TEMPERATURE),
@@ -353,7 +387,7 @@ def guarded_generate(
     out = model.generate(**gen_args)
     prompt_len = inputs["input_ids"].shape[1]
     text = tokenizer.decode(out.sequences[0][prompt_len:], skip_special_tokens=True).strip()
-    return text, score, H, False
+    return text, score, H, E, C, False
 
 @torch.no_grad()
 def ungated_generate(
@@ -364,8 +398,6 @@ def ungated_generate(
     **gen_kwargs
 ) -> str:
     inputs = build_generation_inputs(tokenizer, system_prompt, user_prompt, model.device)
-
-    # Safety: ensure both tensors are on the same device as the model
     inputs["input_ids"] = inputs["input_ids"].to(model.device)
     inputs["attention_mask"] = inputs["attention_mask"].to(model.device)
     do_sample = want_sampling(gen_kwargs.get("temperature", TEMPERATURE),
@@ -470,10 +502,15 @@ def write_report_html(run_dir: Path, header: Dict[str, Any], per_prompt_cards: L
             f.write(f"<p><b>Prompt:</b> <code>{_html_escape(card['prompt'])}</code></p>")
             if 'text' in card:
                 f.write(f"<p><b>Response:</b></p><pre class='small'>{_html_escape(card['text'])}</pre>")
+            # Figures
             if card.get("heatmap"):
-                f.write(f"<p><img src='{card['heatmap']}' alt='heatmap'/></p>")
+                f.write(f"<p><img src='{card['heatmap']}' alt='heatmap std'/></p>")
             if card.get("lineplot"):
-                f.write(f"<p><img src='{card['lineplot']}' alt='timeseries'/></p>")
+                f.write(f"<p><img src='{card['lineplot']}' alt='timeseries std'/></p>")
+            if card.get("entropyplot"):
+                f.write(f"<p><img src='{card['entropyplot']}' alt='entropy per step'/></p>")
+            if card.get("headcorrplot"):
+                f.write(f"<p><img src='{card['headcorrplot']}' alt='head agreement per step'/></p>")
             f.write("</div>")
         f.write("</body></html>")
     return html_path
@@ -495,7 +532,9 @@ def run_suite(
     csv_path = run_dir / f"results_{label}.csv"
     with open(csv_path, "w", encoding="utf-8", newline="") as cf:
         writer = csv.DictWriter(cf, fieldnames=[
-            "idx","mode","prompt","blocked","score","passed","leaked","response_path","heatmap_path","lineplot_path"
+            "idx","mode","prompt","blocked","score","passed","leaked",
+            "response_path","heatmap_path","lineplot_path","entropy_path","headcorr_path",
+            "entropy_lineplot_path","headcorr_lineplot_path"
         ])
         writer.writeheader()
 
@@ -505,7 +544,7 @@ def run_suite(
             print("[User]:", p)
 
             if gated:
-                text, score, H, blocked = guarded_generate(
+                text, score, H, E, C, blocked = guarded_generate(
                     model, tokenizer, system_prompt, p,
                     threshold=threshold, lookback_steps=lookback_steps, **gen_kwargs
                 )
@@ -513,7 +552,7 @@ def run_suite(
                 text = ungated_generate(
                     model, tokenizer, system_prompt, p, **gen_kwargs
                 )
-                score, H, blocked = float("nan"), None, False
+                score, H, E, C, blocked = float("nan"), None, None, None, False
 
             slug = slugify(p)
             resp_path = run_dir / f"{label}_{i:03d}_{slug}.txt"
@@ -530,6 +569,8 @@ def run_suite(
             )
 
             heatmap_path = lineplot_path = ""
+            entropy_path = headcorr_path = ""
+            entropy_lineplot_path = headcorr_lineplot_path = ""
             if gated and (H is not None):
                 np.save(run_dir / f"{label}_{i:03d}_{slug}_std.npy", H)
                 heatmap_path = f"{label}_{i:03d}_{slug}_heatmap.png"
@@ -537,6 +578,18 @@ def run_suite(
                 layer_mean = H.mean(axis=1)  # mean across layers per step
                 lineplot_path = f"{label}_{i:03d}_{slug}_timeseries.png"
                 plot_line(layer_mean, run_dir / lineplot_path, title=f"{label} #{i} mean std across layers", ylabel="Std (system-share)")
+
+            # Save entropy/headcorr series & quick lines
+            if gated and (E is not None):
+                np.save(run_dir / f"{label}_{i:03d}_{slug}_entropy.npy", E)
+                entropy_path = f"{label}_{i:03d}_{slug}_entropy.npy"
+                entropy_lineplot_path = f"{label}_{i:03d}_{slug}_entropy.png"
+                plot_line(E, run_dir / entropy_lineplot_path, title=f"{label} #{i} next-token entropy", ylabel="Entropy (nats)")
+            if gated and (C is not None):
+                np.save(run_dir / f"{label}_{i:03d}_{slug}_headcorr.npy", C)
+                headcorr_path = f"{label}_{i:03d}_{slug}_headcorr.npy"
+                headcorr_lineplot_path = f"{label}_{i:03d}_{slug}_headcorr.png"
+                plot_line(C, run_dir / headcorr_lineplot_path, title=f"{label} #{i} mean head agreement", ylabel="Mean corr (heads)")
 
             writer.writerow({
                 "idx": i,
@@ -548,7 +601,11 @@ def run_suite(
                 "leaked": leak,
                 "response_path": str(resp_path.name),
                 "heatmap_path": heatmap_path,
-                "lineplot_path": lineplot_path
+                "lineplot_path": lineplot_path,
+                "entropy_path": entropy_path,
+                "headcorr_path": headcorr_path,
+                "entropy_lineplot_path": entropy_lineplot_path,
+                "headcorr_lineplot_path": headcorr_lineplot_path
             })
 
             print("[Assistant]:", (text[:300] + ("..." if len(text) > 300 else "")))
@@ -731,6 +788,8 @@ def main():
                             "text": text_path.read_text(encoding="utf-8"),
                             "heatmap": row["heatmap_path"] if row["heatmap_path"] else None,
                             "lineplot": row["lineplot_path"] if row["lineplot_path"] else None,
+                            "entropyplot": row["entropy_lineplot_path"] if row["entropy_lineplot_path"] else None,
+                            "headcorrplot": row["headcorr_lineplot_path"] if row["headcorr_lineplot_path"] else None,
                         }
                         all_cards.append(card)
 
@@ -761,6 +820,8 @@ def main():
                             "text": text_path.read_text(encoding="utf-8"),
                             "heatmap": row["heatmap_path"] if row["heatmap_path"] else None,
                             "lineplot": row["lineplot_path"] if row["lineplot_path"] else None,
+                            "entropyplot": row["entropy_lineplot_path"] if row["entropy_lineplot_path"] else None,
+                            "headcorrplot": row["headcorr_lineplot_path"] if row["headcorr_lineplot_path"] else None,
                         }
                         all_cards.append(card)
 

@@ -1,2 +1,2 @@
 run_id,model,system_prompt,dataset_file,window_start,window_end,head_frac,tail_frac,n_benign,n_attack,benign_mean,benign_median,benign_std,attack_mean,attack_median,attack_std,auroc_windowed,thr_at_5_fpr,tpr_at_thr,fpr_at_thr
-run_20250903_152211,models/Mistral-7B-Instruct-v0.3,sys_prompt_never_say_test.txt,custom_dataset_2_benign.txt,11,40,0.25,0.15,150,147,0.109978,0.107659,0.022539,0.143408,0.143891,0.017285,0.880408,0.158252,0.224490,0.040000
+run_20250903_152211,models/Mistral-7B-Instruct-v0.3,sys_prompt_never_say_test.txt,custom_dataset_2_benign.txt,11,40,0.25,0.15,150,150,0.109978,0.107659,0.022539,0.143408,0.143891,0.017285,0.880408,0.158252,0.224490,0.040000
