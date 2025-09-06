@@ -3,11 +3,11 @@
 > Status: Exploratory but repeatable. I’m a security engineer, not an ML theorist; I noticed this while prototyping prompt-injection defenses. The code automates a lot and I haven’t manually audited every artifact. Please treat as preliminary; issues/PRs welcome if you spot mistakes.
 
 ## Overview
-Recent work on attention interpretability describes the distraction effect—attention heads shifting from system tokens toward injected tokens ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), This repo explores a potentially complementary signal: inter-head instability. In certain decoding windows, attention heads disagree more when user input conflicts with system instructions.
+Recent work on attention interpretability describes the distraction effect, attention heads shifting from system tokens toward injected tokens ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), This repo explores a potentially complementary signal: inter-head instability. In certain decoding windows, attention heads disagree more when user input conflicts with system instructions.
 
 I quantify instability as the per-layer standard deviation across heads of attention on system-prompt tokens, averaged over a short slice of steps/layers.
 
-Across multiple datasets and two model families, adversarial prompts (that try to override the system rule) show higher instability than benign prompts—even when benign prompts are long and messy. Instability does not reduce to entropy/uncertainty in my runs, and it tracks a breakdown in head agreement.
+Across multiple datasets and two model families, adversarial prompts (that try to override the system rule) show higher instability than benign prompts, even when benign prompts are long and messy. Instability does not reduce to entropy/uncertainty in my runs, and it tracks a breakdown in head agreement.
 
 What this looks good for:
 - Lightweight defensive layer for prompt injections w/ automatic gating and/or alerting.
