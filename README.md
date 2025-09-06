@@ -33,7 +33,7 @@ I’m not claiming novelty over Attention Tracker; this signal may be a system-l
   - TOP_P: None
   - SEED: 1000003
 
-I also log token entropy, top-1 prob/margin, and a crude head-agreement score (mean head–head correlation on system-share) to attack “it’s just uncertainty/length” critiques.
+I also log token entropy, top-1 prob/margin, and a crude head-agreement score (mean head–head correlation on system-share) to attempt to address “it’s just uncertainty/length” critiques.
 
 ---
 
