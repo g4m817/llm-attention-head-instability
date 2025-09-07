@@ -3,11 +3,11 @@
 > Status: Exploratory but repeatable. I’m a security engineer, not an ML theorist; I noticed this while prototyping prompt-injection defenses. The code automates a lot and I haven’t manually audited every artifact. Please treat as preliminary; issues/PRs welcome if you spot mistakes.
 
 ## Overview
-Recent work on attention interpretability describes the distraction effect—attention heads shifting from system tokens toward injected tokens ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), This repo explores a potentially complementary signal: inter-head instability. In certain decoding windows, attention heads disagree more when user input conflicts with system instructions.
+Recent work on attention interpretability describes the distraction effect, attention heads shifting from system tokens toward injected tokens ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), This repo explores a potentially complementary signal: inter-head instability. In certain decoding windows, attention heads disagree more when user input conflicts with system instructions.
 
 I quantify instability as the per-layer standard deviation across heads of attention on system-prompt tokens, averaged over a short slice of steps/layers.
 
-Across multiple datasets and two model families, adversarial prompts (that try to override the system rule) show higher instability than benign prompts—even when benign prompts are long and messy. Instability does not reduce to entropy/uncertainty in my runs, and it tracks a breakdown in head agreement.
+Across multiple datasets and two model families, adversarial prompts (that try to override the system rule) show higher instability than benign prompts, even when benign prompts are long and messy. Instability does not reduce to entropy/uncertainty in my runs, and it tracks a breakdown in head agreement.
 
 What this looks good for:
 - Lightweight defensive layer for prompt injections w/ automatic gating and/or alerting.
@@ -33,7 +33,7 @@ I’m not claiming novelty over Attention Tracker; this signal may be a system-l
   - TOP_P: None
   - SEED: 1000003
 
-I also log token entropy, top-1 prob/margin, and a crude head-agreement score (mean head–head correlation on system-share) to attack “it’s just uncertainty/length” critiques.
+I also log token entropy, top-1 prob/margin, and a crude head-agreement score (mean head–head correlation on system-share) to attempt to address “it’s just uncertainty/length” critiques.
 
 ---
 
@@ -52,13 +52,18 @@ The complex-benign set stresses ingestion/parsing difficulty rather than adversa
 > These results are preliminary and based on small datasets/models. While the signal separates benign from adversarial inputs in these runs, it is not clear if this generalizes across architectures, prompts, or attack types.
 
 ### 📊 Testing For Pitfalls: Complex Benign Input / Entropy / Etc.
-This dataset includes unique graphs compared to the other datasets, the goal of this set was to ensure the signal didn't break down with complex benign prompts, which would indicate it only signals complexity that leads to head disagreement. Additioally, we wanted to ensure this was not just entropy and compare it to head agreement.
+This dataset includes unique graphs compared to the other datasets, the goal of this set was to ensure the signal didn't break down with complex benign prompts, which would indicate it only signals complexity that leads to head disagreement. Additionally, we wanted to ensure this was not just entropy and compare it to head agreement.
 
 #### Run Overview
 | run_id             | model                        | system_prompt                | dataset_file                        | window_start | window_end | head_frac | tail_frac | n_benign | n_attack | benign_mean | benign_median | benign_std | attack_mean | attack_median | attack_std | auroc_windowed | thr_at_5_fpr | tpr_at_thr | fpr_at_thr | pearson_instability_entropy | spearman_instability_entropy |
 |--------------------|------------------------------|------------------------------|-------------------------------------|--------------|------------|-----------|-----------|----------|----------|-------------|---------------|------------|-------------|---------------|------------|----------------|--------------|------------|------------|-----------------------------|------------------------------|
 | run_20250906_004627 | models/Nous-Capybara-7B-V1.9 | sys_prompt_never_say_test.txt | custom_dataset_4_complex_benign.txt | 1            | 3          | 0.25      | 0.15      | 150      | 150      | 0.046317    | 0.041022      | 0.018149   | 0.144348    | 0.141537      | 0.039308   | 0.987200       | 0.115670     | 0.820000   | 0.040000   | -0.199118                   | -0.133201                    |
 | run_20250906_012752 | models/Mistral-7B-Instruct-v0.3 | sys_prompt_never_say_test.txt | custom_dataset_4_complex_benign.txt | 11           | 40         | 0.25      | 0.15      | 144      | 150      | 0.088301    | 0.081420      | 0.024401   | 0.150225    | 0.154322      | 0.019313   | 0.948333       | 0.159971     | 0.320000   | 0.041667   | 0.339492                    | 0.353442                     |
+
+| model                          | pearson_instability_entropy | spearman_instability_entropy | pearson_instability_headcorr | spearman_instability_headcorr | n_samples |
+|--------------------------------|-----------------------------|------------------------------|------------------------------|-------------------------------|-----------|
+| models/Nous-Capybara-7B-V1.9   | -0.199118                   | -0.133201                    | 0.757681                     | 0.735122                      | 300       |
+| models/Mistral-7B-Instruct-v0.3| 0.339492                    | 0.353442                     | 0.675619                     | 0.676440                      | 300       |
 
 #### Summary (Nous vs. Mistral)
 - Separation holds: complex-benign clusters with benign, not with attacks.
@@ -264,7 +269,6 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 - Compare directly with important-head analysis (Attention Tracker) to test whether instability consistently precedes head distraction.
 - Explore whether per-model tuning can be replaced with normalized instability metrics.
 - Investigate whether instability precedes jailbreak *success probability* in the wild.
-- Because the detection of adversarial prompts via instability is less precise and prone to false positives on complex benign prompts, one possible use case is as a routing heuristic. Instead of sending every input through a costly guard LLM, inter-head instability could potentially flag only the suspicious ones, potentially saving significant resources for companies deploying such defenses.
 
 ---
 
