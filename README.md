@@ -38,7 +38,7 @@ I also log token entropy, top-1 prob/margin, and a crude head-agreement score (m
 ---
 
 ### Instability Windows
-A key empirical finding is that **instability onset is model-dependent rather than dataset-dependent**. In Nous-Capybara-7B, divergence between benign and adversarial runs appears immediately within the first few decoding steps. Heatmaps of mean instability show that attacks trigger elevated cross-head variance almost instantly, and stepwise AUROC peaks at steps 1–3. By contrast, Mistral-7B-Instruct shows relatively flat early-step curves: instability rises only later, becoming most discriminative in steps 11–40.
+A key observation is that **instability onset appears to be model-dependent rather than dataset-dependent**. In Nous-Capybara-7B, divergence between benign and adversarial runs appears immediately within the first few decoding steps. Heatmaps of mean instability show that attacks trigger elevated cross-head variance almost instantly, and stepwise AUROC peaks at steps 1–3. By contrast, Mistral-7B-Instruct shows relatively flat early-step curves: instability rises only later, becoming most discriminative in steps 11–40.
 
 This difference is reinforced by distribution plots: in Nous, attack scores separate cleanly from benign in early windows, while in Mistral, separation is strongest when scores are pooled over mid-range decoding. Scatter plots confirm that in both models, instability correlates more strongly with head agreement breakdown than with entropy. Together, these results demonstrate that **the effective detection window is a function of model architecture and training, not input dataset**. 
 
