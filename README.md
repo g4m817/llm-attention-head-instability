@@ -37,6 +37,39 @@ I also log token entropy, top-1 prob/margin, and a crude head-agreement score (m
 
 ---
 
+### Instability Windows
+A key empirical finding is that **instability onset is model-dependent rather than dataset-dependent**. In Nous-Capybara-7B, divergence between benign and adversarial runs appears immediately within the first few decoding steps. Heatmaps of mean instability show that attacks trigger elevated cross-head variance almost instantly, and stepwise AUROC peaks at steps 1–3. By contrast, Mistral-7B-Instruct shows relatively flat early-step curves: instability rises only later, becoming most discriminative in steps 11–40.
+
+This difference is reinforced by distribution plots: in Nous, attack scores separate cleanly from benign in early windows, while in Mistral, separation is strongest when scores are pooled over mid-range decoding. Scatter plots confirm that in both models, instability correlates more strongly with head agreement breakdown than with entropy. Together, these results demonstrate that **the effective detection window is a function of model architecture and training, not input dataset**. 
+
+---
+
+Nous-Capybara-7B attack heatmap shows immediate instability spike (steps 1–3).
+![Nous attack vs benign heatmap](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/mean_heatmap_attack.png)
+
+Stepwise AUROC for Nous. Highest discrimination occurs at earliest steps.
+![Nous stepwise AUROC](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_auroc.png)
+
+Mistral-7B-Instruct attack heatmap. Instability builds gradually, differentiating after step 10.
+![Mistral attack vs benign heatmap](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/mean_heatmap_attack.png)
+
+ROC curve for Mistral, windowed over steps 11–40. AUROC = 0.95.
+![Mistral ROC](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/roc.png)
+
+Nous violin plot of instability scores. Clear early-step separation.
+![Nous violin](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/violin_windowed.png)
+
+Mistral violin plot. Best separation in mid-step window.
+![Mistral violin](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/violin_windowed.png)
+
+Nous scatter plot. Strong negative correlation between instability and head agreement.
+![Nous scatter instability vs head agreement](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
+
+Mistral scatter plot. Same pattern, but onset delayed until later steps.
+![Mistral scatter instability vs head agreement](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
+
+---
+
 ## Results Across Eight Runs
 
 Four datasets, each run on both model families, 3 iterations, 50 benign + 50 attack prompts ( = 300 prompts/model/dataset). System prompts vary where noted.
@@ -77,14 +110,6 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 ###### Stepwise Entropy Comparison
 ![Nous Entropy](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_overlay.png)
 ![Mistral Entropy](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_overlay.png)
-
-###### Scatter Instability vs Entropy
-![Nous IvE](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_entropy.png)
-![Mistral IvE](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_entropy.png)
-
-###### Scatter Instability vs Head
-![Nous IvH](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
-![Mistral IvH](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
 
 ###### Distribution
 ![Nous IvH](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_windowed.png)
