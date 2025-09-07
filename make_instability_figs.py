@@ -229,34 +229,20 @@ def pearson_spearman(x: np.ndarray, y: np.ndarray) -> Tuple[float,float]:
 def ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
 
-def save_stepwise_auroc(y_true: np.ndarray, std_series: np.ndarray, outpath: str):
-    """
-    y_true: shape [N] — binary labels
-    std_series: shape [N, T] — per-sample instability per step
-    """
-    mask = np.isfinite(std_series).any(axis=1)
-    y = y_true[mask]
-    X = std_series[mask]
-
-    if len(y) < 3 or len(np.unique(y)) < 2:
-        print(f"[WARN] Not enough data for stepwise AUROC: {outpath}")
-        return
-
-    T = X.shape[1]
-    aucs = []
-    for t in range(T):
-        scores = X[:, t]
-        if np.isfinite(scores).sum() < 3:
-            aucs.append(np.nan)
-        else:
-            try:
-                aucs.append(roc_auc_score(y, scores))
-            except:
-                aucs.append(np.nan)
-
-    xs = np.arange(T)
+def save_stepwise_auroc(y_true: np.ndarray, step_mat: np.ndarray, outpath: str):
+    """Compute AUROC at each decode step using layer-trimmed per-step means."""
+    # step_mat: [N, T] where T includes prefill 0 (NaN)
+    T = step_mat.shape[1]
+    xs, ys = [], []
+    for k in range(1, T):  # skip prefill
+        s = step_mat[:, k]
+        m = np.isfinite(s)
+        if m.sum() < 3 or len(np.unique(y_true[m])) < 2:
+            xs.append(k); ys.append(np.nan); continue
+        xs.append(k)
+        ys.append(roc_auc_score(y_true[m], s[m]))
     plt.figure(figsize=(8,5))
-    plt.plot(xs, aucs, lw=2, color="#1f77b4")
+    plt.plot(xs, ys, lw=2, color="#1f77b4")
     plt.xlabel("Decoding step")
     plt.ylabel("AUROC")
     plt.title("Stepwise AUROC — Instability (per-step mean std)")
