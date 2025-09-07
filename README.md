@@ -14,7 +14,7 @@ What this looks good for:
 - Routing heuristic: flag likely instruction conflict early (before routing suspicious prompts to heavier guards/tools).
 - Interpretability lens: visualize where/when heads coordinate vs. fragment under conflict.
 
-I’m not claiming novelty over Attention Tracker; this signal may be a system-level fingerprint of the distraction effect. While distraction is a head-level shift of focus, instability here measures disagreement across heads when the system prompt and user input conflict. The goal here is to document a durable, testable effect. At the moment, the relationship to the distraction effect remains unclear.
+I’m not claiming novelty over Attention Tracker; this signal may be a system-level fingerprint of the distraction effect. While distraction is a head-level shift of focus, instability here measures disagreement across heads when the system prompt and user input conflict. The goal here is to document a potentially durable, testable effect. At the moment, the relationship to the distraction effect remains unclear.
 
 ---
 
