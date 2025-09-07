@@ -229,6 +229,42 @@ def pearson_spearman(x: np.ndarray, y: np.ndarray) -> Tuple[float,float]:
 def ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
 
+def save_stepwise_auroc(y_true: np.ndarray, std_series: np.ndarray, outpath: str):
+    """
+    y_true: shape [N] — binary labels
+    std_series: shape [N, T] — per-sample instability per step
+    """
+    mask = np.isfinite(std_series).any(axis=1)
+    y = y_true[mask]
+    X = std_series[mask]
+
+    if len(y) < 3 or len(np.unique(y)) < 2:
+        print(f"[WARN] Not enough data for stepwise AUROC: {outpath}")
+        return
+
+    T = X.shape[1]
+    aucs = []
+    for t in range(T):
+        scores = X[:, t]
+        if np.isfinite(scores).sum() < 3:
+            aucs.append(np.nan)
+        else:
+            try:
+                aucs.append(roc_auc_score(y, scores))
+            except:
+                aucs.append(np.nan)
+
+    xs = np.arange(T)
+    plt.figure(figsize=(8,5))
+    plt.plot(xs, aucs, lw=2, color="#1f77b4")
+    plt.xlabel("Decoding step")
+    plt.ylabel("AUROC")
+    plt.title("Stepwise AUROC — Instability (per-step mean std)")
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(outpath, dpi=180)
+    plt.close()
+
 def save_roc(y_true: np.ndarray, scores: np.ndarray, title: str, outpath: str):
     mask = np.isfinite(scores)
     y = y_true[mask]; s = scores[mask]
@@ -402,6 +438,15 @@ def main():
                     "pearson_instability_entropy","spearman_instability_entropy"
                 ])
 
+                def _pad(arrs):
+                    arrs = [a for a in arrs if isinstance(a, np.ndarray) and a.size]
+                    if not arrs:
+                        return None
+                    maxlen = max(a.shape[0] for a in arrs)
+                    out = np.full((len(arrs), maxlen), np.nan, dtype=np.float32)
+                    for i, a in enumerate(arrs):
+                        out[i, :a.shape[0]] = a
+                    return out
                 def class_stats(arr: np.ndarray) -> Tuple[float,float,float]:
                     arr = arr[np.isfinite(arr)]
                     if arr.size == 0:
@@ -438,6 +483,8 @@ def main():
                             r_scores.append((is_attack, score))
                             scores.append((is_attack, score))
                             step_series_list.append(step_series_std(s.std, rhead, rtail))
+                            step_series_mat = _pad([s for s in step_series_list if isinstance(s, np.ndarray) and s.ndim == 1])
+                            y_bin = np.array([a for a, _ in scores], dtype=np.int32)
                             if is_attack:
                                 attack_heatmaps.append(s.std)
                             else:
@@ -455,7 +502,6 @@ def main():
 
                     if not r_scores:
                         continue
-
                     ry = np.array([a for a,_ in r_scores], dtype=np.int32)
                     rs = np.array([v for _,v in r_scores], dtype=np.float32)
                     bvals = np.array([v for a,v in r_scores if a==0], dtype=np.float32)
@@ -533,20 +579,6 @@ def main():
                 y_true = np.array([], dtype=np.int32)
                 sc = np.array([], dtype=np.float32)
 
-            # Stepwise means — align different lengths
-            def _pad(arrs):
-                arrs = [a for a in arrs if isinstance(a, np.ndarray) and a.size]
-                if not arrs:
-                    return None
-                maxlen = max(a.shape[0] for a in arrs)
-                out = np.full((len(arrs), maxlen), np.nan, dtype=np.float32)
-                for i, a in enumerate(arrs):
-                    out[i, :a.shape[0]] = a
-                return out
-
-            # Build per-sample step series for std (we already have these), entropy, headcorr
-            step_std_mat = _pad(step_series_list)
-
             # For entropy/headcorr, we don't have layer-trim. Use direct per-step means across samples.
             ent_series_list = []
             corr_series_list = []
@@ -570,6 +602,13 @@ def main():
                 f"ROC — {label} — steps {w0}–{w1}",
                 os.path.join(gdir, "roc.png")
             )
+
+            step_std_mat = _pad(step_series_list)
+
+            if step_std_mat is not None and step_std_mat.shape[0] == len(y_true):
+                save_stepwise_auroc(y_true, step_std_mat, os.path.join(gdir, "stepwise_auroc.png"))
+            else:
+                print(f"[WARN] Could not generate stepwise AUROC for group {label} — mismatched shapes")
 
             # 2) Stepwise overlays: mean instability (trimmed), entropy, headcorr
             # Build shared x-axis by max length across present mats

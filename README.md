@@ -70,20 +70,20 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 
 **Figures:**  
 ###### Stepwise Entropy Comparison
-![Nous Entropy](figs_complex_benign_comparison/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_overlay.png)
-![Mistral Entropy](figs_complex_benign_comparison/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_overlay.png)
+![Nous Entropy](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_overlay.png)
+![Mistral Entropy](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/stepwise_overlay.png)
 
 ###### Scatter Instability vs Entropy
-![Nous IvE](figs_complex_benign_comparison/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_entropy.png)
-![Mistral IvE](figs_complex_benign_comparison/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_entropy.png)
+![Nous IvE](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_entropy.png)
+![Mistral IvE](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_entropy.png)
 
 ###### Scatter Instability vs Head
-![Nous IvH](figs_complex_benign_comparison/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
-![Mistral IvH](figs_complex_benign_comparison/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
+![Nous IvH](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
+![Mistral IvH](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_instability_vs_headcorr.png)
 
 ###### Distribution
-![Nous IvH](figs_complex_benign_comparison/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_windowed.png)
-![Mistral IvH](figs_complex_benign_comparison/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_windowed.png)
+![Nous IvH](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_windowed.png)
+![Mistral IvH](figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_4_complex_benign.txt/scatter_windowed.png)
 
 ### 📊 Dataset 1: Encouraging / Manipulating the model to say "test"
 - 50 Attack prompts
