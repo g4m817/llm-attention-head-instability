@@ -1,6 +1,6 @@
 # Inter-Head Instability: A Signal of Attention Disagreement in LLMs
 
-> Status: Exploratory but repeatable. I’m a security engineer, not an ML theorist; I noticed this while prototyping prompt-injection defenses. The code automates a lot and I haven’t manually audited every artifact. Please treat as preliminary; issues/PRs welcome if you spot mistakes.
+> Status: Exploratory but repeatable. I’m a security engineer, not an ML theorist; I noticed this while prototyping prompt-injection defenses. The code automates a lot and I haven’t manually audited every artifact. Please treat as preliminary; issues/PRs welcome if you spot mistakes. I'm currently revising the scripts and applying them to the [deepset prompt injection dataset](https://huggingface.co/datasets/deepset/prompt-injections), those results will overwrite the preliminary results currently contained here, as I'm applying more rigor to the experiments, which shold make for better insights into the signal and robustness.
 
 ## Overview
 Recent work on attention interpretability describes the distraction effect, attention heads shifting from system tokens toward injected tokens ([Attention Tracker: Detecting Prompt Injection Attacks in LLMs (Hung, Ko, Rawat, Chung, Hsu, and Chen, 2024)](https://arxiv.org/html/2411.00348v1)), This repo explores a potentially complementary signal: inter-head instability. In certain decoding windows, attention heads disagree more when user input conflicts with system instructions.
