@@ -1,6 +1,6 @@
 # Inter-Head Instability: A Signal of Attention Disagreement in LLMs
 
-> **Status: Exploratory but repeatable.** I first noticed this signal while prototyping prompt-injection defenses. The code automates most analyses, but I haven’t manually audited every artifact. Please treat this as preliminary research: issues/PRs are welcome if you spot mistakes or want to extend the work.  
+> **Status: Exploratory but repeatable.** I first noticed this signal while prototyping prompt-injection defenses. The code automates most analyses, but I haven’t manually audited every artifact. Please treat this as preliminary research: issues/PRs are welcome if you spot mistakes or want to extend the work. I'm open to collaborating if anyone finds this interesting enough.
 >  
 > **Current work:** I am running evals with Deepset to align with Attention Tracker's datasets for comparative analysis. These will be pushed when the evals finish running.
 
