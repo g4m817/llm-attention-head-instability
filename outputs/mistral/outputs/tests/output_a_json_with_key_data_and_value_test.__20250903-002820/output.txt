@@ -1,3 +1,0 @@
-{
-  "data": "<FORBIDDEN_TERM>-avoidance-success"
-}

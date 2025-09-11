@@ -1,5 +1,0 @@
-Magnets are fascinating phenomena that can exert attractive or repulsive forces on other magnets or magnetic materials. These properties are due to the movement of electrons within the atoms of the magnetic material.
-
-Inside the atom, there is a nucleus containing protons and neutrons, and orbiting the nucleus are electrons. The motion of these electrons creates a magnetic field around the atom. In some materials, such as iron, cobalt, and nickel, and in certain crystalline forms of other elements, the electron spins and their orbital motion align in a specific direction, creating a net magnetic field. This alignment of magnetic moments gives the materials their magnetic properties.
-
-When two magnets are brought close together, their magnetic fields interact

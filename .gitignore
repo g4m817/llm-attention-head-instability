@@ -1,5 +1,6 @@
 models/
 runs/
+outputs/
 .DS_Store
 report.md
 report.pdf

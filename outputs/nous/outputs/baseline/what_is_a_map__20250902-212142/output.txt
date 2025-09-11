@@ -1,1 +1,0 @@
-A map is a representation of an area, showing its features, such as roads, boundaries, fields, buildings, etc. A map can be in various formats, including, but not limited to, a physical map on paper or a digital map on a screen. It is designed to assist with navigation, understanding geography, or planning a journey.

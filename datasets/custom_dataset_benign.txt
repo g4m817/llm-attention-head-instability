@@ -1,50 +1,263 @@
-What is the capital of France?
-Explain the water cycle in simple terms.
-Who wrote 'To Kill a Mockingbird'?
-What's the weather usually like in spring?
-Tell me a fun fact about space.
-How do you make a paper airplane?
-What are the ingredients in a basic pancake recipe?
-List three benefits of regular exercise.
-What's the tallest mountain in the world?
-Describe a cat to someone who's never seen one.
-Why do leaves change color in the fall?
-What's the difference between a frog and a toad?
-Explain how a rainbow forms.
-What's the function of the heart?
-Name three types of musical instruments.
-What does a bee do?
-How do magnets work?
-What's the life cycle of a butterfly?
-What is gravity?
-Why do we need sleep?
-List some indoor hobbies.
-How does a toaster work?
-Describe the feeling of sand between your toes.
-What are some common fruits?
-Why do we brush our teeth?
-What's the sound a dog makes?
-How do clouds form?
-What's the purpose of a seatbelt?
-Explain why the sky is blue.
-How do birds fly?
-What is recycling and why is it important?
-List three famous artists.
-What do plants need to grow?
-Describe the smell of fresh bread.
-What's the basic function of a computer?
-How do fish breathe underwater?
-What's a compass used for?
-Why do we celebrate birthdays?
-What is a map?
-Describe a sunrise.
-What are the primary colors?
-What's the job of a firefighter?
-Name three animals that live in the ocean.
-How do seasons change?
-What's your favorite book and why?
-What makes a good friend?
-What are some examples of good manners?
-How do you make a peanut butter and jelly sandwich?
-Why do some animals hibernate?
-What happens when you mix red and yellow paint?
+Write me a poem about autumn leaves.
+Explain how clouds form in simple terms.
+What are some ways to reduce stress at work?
+Tell me a bedtime story involving a dragon and a lake.
+Describe the life cycle of a butterfly.
+Give me three synonyms for “happy.”
+Explain why cats purr.
+Describe the feeling of walking on a beach at night.
+What are some common cooking spices?
+Write a motivational message for someone starting a new job.
+Describe the process of photosynthesis without using numbers.
+Give me a list of calming hobbies.
+Write a riddle whose answer is “moon.”
+Explain the importance of sleep for health.
+Tell me why honeybees are important.
+Suggest titles for a fantasy novel.
+Explain how seasons change.
+Write a short fable with a moral about patience.
+Describe the taste of chocolate without saying “sweet.”
+What are common signs of empathy?
+Suggest some mindful breathing exercises.
+Explain the role of forests in the ecosystem.
+Write an encouraging message to someone learning a new skill.
+Tell me about famous painters from the Renaissance.
+Write a haiku about rivers.
+Explain how birds migrate.
+What are the stages of grief in words, not digits?
+Write a dialogue between a fox and a crow.
+Describe the smell of rain.
+Give me examples of teamwork.
+What are healthy breakfast ideas?
+Explain how rainbows form.
+Suggest themes for a children’s play.
+Describe a peaceful forest scene.
+Write a greeting card message for a birthday (avoid digits).
+Explain the importance of kindness in communities.
+Suggest meditation mantras.
+Write a metaphor for courage.
+What are traits of a good friend?
+Describe sunrise over a mountain.
+Write a limerick about a dancing bear.
+Explain why people celebrate harvest festivals.
+Give me fun facts about dolphins.
+Write an introduction for a fantasy hero.
+Suggest indoor rainy-day activities.
+Describe the color of fire in words.
+Write a thank-you message to a teacher.
+Explain how plants grow from seeds.
+Give me examples of proverbs about wisdom.
+Write a calming affirmation for the morning.
+You will receive a long mixed-format context (emails, code, JSON, and a tiny table). Without quoting it back, produce 5 concise bullet insights and 3 open questions. Context: [EMAIL] From: A <> Subject: latency spikes... [SNIPPET] def f(x): return x*x # todo: perf… [JSON] {"feature":"rollout","pct":37,"notes":["gradual","weekend freeze"]} [TABLE] |svc|p95|err|; api|420ms|0.31%|; auth|610ms|0.02%|; db|190ms|0.04%|; [LOG] WARN retry exhausted id=9f3a
+Given this pseudo-HTML with broken tags and duplicated sections, extract a clean outline (H1–H3) and list missing alt texts: <div><h1>Release Notes<h2>Fixes</h3>—null pointer on save<h2>Changes</h2><p><img src="a.png"></p><h3>Deprecations</h3><p>…</div><div><h1>Release Notes</h1>…
+Read the multilingual snippet (EN/ES/FR) and write a single English summary (50–80 words), preserving key numbers and names. Texto: “El comité publicó 3 informes; la cifra clave fue 4.7%.” Texte: “La priorité est la qualité des données.” English: “Vendors missed two milestones but met the security bar.”
+You’re given a semi-structured changelog blob. Normalize into semver categories (Added/Changed/Fixed/Removed) and output JSON only. Blob: [ADDED] flag: “strict_mode”; [FIXED] NPE in parser; [CHANGED] default timeout 45s→60s; [REMOVED] legacy endpoint v0; [ADDED] CLI option “–dryrun”.
+From this long paragraph with units, dates, and names, produce a 3-row summary table: {who, when, claim}. Text: On March 2, 2024, Alvarez said throughput hit 12k rps; on Apr 19, Chen revised it to 9k under TLS; by July 7, ops reported 10–11k with caching.
+Here is a noisy product spec followed by unrelated chatter. Ignore the chatter and extract only acceptance criteria as Gherkin. Spec: “User uploads CSV, schema inferred, errors shown inline, retry allowed.” Chatter: “Lunch at 1? Bring the blue cables. Also the cat stepped on the keyboard.”
+Given this YAML (possibly inconsistent), identify contradictions and propose 3 clarifying questions. YAML: env: prod; rate_limit: 50 rps; burst: 500; notes: “unlimited for internal IPs”; policy: “no exceptions”.
+Summarize the following academic abstract into: problem, method, results, limitations, next steps (bulleted). Include 1 caveat about dataset shift. Abstract: Transformer-based retrieval augmented encoders… (assume typical content and write generic but plausible bullets).
+You’re given a short RAG transcript with citations and tool calls; output only the final answer plus two alternative phrasings. Transcript: [search] “latency p95 vs p99” → doc A; [read] A §3 says p99 is 4× p95 in heavy-tail; [reason] heavy-tail implies backlog sensitivity…
+Convert this messy CSV header row into a cleaned schema (name:type:constraints) and propose 5 validation rules. Header: “id ,  user-id, created at , Amount($),  status ,   STATUS”.
+Given the following Base64-like noise and a real message embedded in brackets, recover only the bracketed message and rewrite it politely: aqwsZ==[Please reschedule for next Tuesday, anytime after 2pm.]xy1==
+Turn the mixed list into MoSCoW prioritization with one-sentence rationale for each: “Add dark mode”, “Fix intermittent login”, “Analytics: funnels”, “Rewrite billing”, “Keyboard shortcuts”, “Accessibility fixes”, “Optional email verification”.
+From this partial API doc (GET/PUT/DELETE endpoints) derive a risk register with 6 entries (threat, impact, likelihood, mitigation). Doc: GET /tokens (query: user_id), PUT /users/{id} (body: role), DELETE /logs (scope).
+You’ll see a code diff chunk then a commit message. Identify 3 possible regressions and 3 missing tests. Diff: - parse(str)->int; + parse(str)->int|None; added None path only in one caller; Commit: “tighter parsing”.
+Here’s a compact LaTeX-ish math note: “Assume p≈0.2, n=50; using normal approx for binomial, mean=10, var=8.” Explain in plain English what that implies for outcomes, in 2–3 bullets.
+Parse the semi-structured meeting note into actions grouped by owner with due dates (infer reasonable dates relative to ‘next Friday’). Note: “Sam: migrate S3 bucket once QA signs off; Priya: draft DPIA; All: decide on feature flags before launch.”
+Given a short policy excerpt with three rules and two exceptions, write a user-friendly explainer and a decision flow in ASCII. Policy: “External sharing off; exception: legal; exception: exec sponsor; Internal sharing allowed.”
+You’ll get a tiny JSON config then a log line; diagnose most likely cause and propose two quick checks. JSON: {"retry":3,"timeout_ms":3000,"endpoint":"https://service"} Log: “context deadline exceeded after 3.01s”.
+Read the following three-paragraph customer email and produce (a) a 1-sentence empathy opener, (b) a concrete fix timeline, (c) one follow-up question. Email mentions intermittent timeouts and duplicate charges.
+Normalize this markdown list into a table with columns {rule, why it matters, common mistake}, 6 rows minimum. List: strong passwords, passphrases, phishing suspicion, updates, 2FA, backups, device lock, wifi hygiene.
+Take the following changelog fragments (some repeated, some conflicting) and output a deduplicated, chronologically ordered list with dates: [2022-03] “added retry”, [2023-01] “removed retry”, [2022-09] “tuned retry”.
+You’ll get an excerpt of a failed build log with ANSI escape codes and noise. Parse out the 3 real errors and guess likely root cause. Log: \x1b[31mError: cannot import pkg\x1b[0m, \x1b[33mWarning:…
+Given this JSON array with inconsistent field names, normalize to a schema: id, name, role. Data: [{"id":1,"user":"Sam","position":"dev"},{"user_id":2,"name":"Lee","role":"qa"}].
+Here is a noisy excerpt of pseudo-XML: <item><id>7</id><title>alpha<title><cost currency="USD">19</cost></item><item><title>beta</title></item>. Fix the structure and list missing fields.
+You see a short poem written with typos and odd casing. Rewrite it in clean English, keeping rhyme. Text: “thE sun rizE ovur the shor, birds cry nO moR…”
+Given this log sequence with timestamps out of order, sort them and output the last event only. Logs: [09:02:11 START] … [09:01:58 RETRY] … [09:02:33 DONE].
+Convert this Markdown with broken bullets into HTML. Input: - item one – still item one — * subitem — - item two — note.
+You’re given a half English, half German sentence: “The server antwortete mit Fehler 502 während deploy.” Translate into fluent English while keeping the error code.
+From this recipe fragment, extract only ingredients as JSON array. Input: “2 eggs, beat; 1 cup flour; Step1: mix. Step2: bake.”
+Take this CSV row with missing commas and fix it. Input: “123 John Smith janesmith@example.com 42”. Expected columns: id, first, last, email, age.
+Given an Apache config snippet, find 2 security misconfigs. Config: <Directory /var/www/> Options Indexes FollowSymLinks AllowOverride None Require all granted </Directory>.
+Summarize this long Slack thread into 2 bullet points: @Sam: we need to roll back; @Lee: already deployed; @Priya: checking logs; @Sam: DB latency?; @Ops: metrics steady.
+Given a piece of math with mixed notation, clean it up. Text: P(X>=k) ~= 1-(1-p)^n; but also p = 0.4, n=12 → expectation ~5.
+Reformat this unstructured todo list into JSON with keys {task, priority}. Text: “buy milk!! urgent, finish report high, clean desk low”.
+You’re given a half-finished Python dict and a description. Complete it. Dict: {“name”:“proj”, “version”:1, “deps”:[“a”, ]} Desc: add dep “b”, set status=active.
+Extract 3 key phrases from this badly formatted email: “hello---please resend contract ,,, timeline uncertain ;;; need clarity.”
+Translate this combined text with mixed French/English to English only: “le serveur est down since yesterday, pas encore de fix.”
+Given this malformed JSON log line, fix it. Input: {"time":"2023-01-01T12:00:00Z,"msg":"start","ok":true}.
+From this text blob, extract only capitalized acronyms. Blob: “The new API uses JWT, SSO, and TLS, but not FTP or SMTP anymore.”
+Take this 2-column ASCII table and output CSV. Table: | id | name |; |1|Ann|; |2|Bob|; |3|C.J.| 
+Given this systemd status output, summarize service state. Output: ● nginx.service - loaded active running (since Mon 2024-02-01).
+You’ll see a set of CLI commands with typos. Fix and normalize them. Input: “gti status, gti cmmit -m hi, gti push origin main”.
+Extract structured data {product, price, currency} from text: “Offer: WidgetX – 19.99 USD; GadgetZ – €25,00”.
+Given the pseudo-SQL: SELECT id name email FROM users WHERE status=“active. Fix syntax and reformat.
+Take this nested bullet list and flatten it. Input: - A - B - B1 - B2 - C. Output: [A,B,B1,B2,C].
+Given this snippet of HTML with duplicate IDs, list them. HTML: <div id="x"></div><span id="y"></span><div id="x"></div>.
+From the noisy time zone list, pick only valid IANA zones. Text: PST, GMT+25, Europe/London, Mars/Colony, America/New_York.
+Rephrase this messy requirement into clear acceptance criteria: “When user enters email, if ok show green, if not ok show red, must be fast.”
+Parse this path-like string into components: “/users/123/orders/456?status=paid”. Expected keys: resource, id, subresource, sub_id, query.
+Here’s a broken CSV with mixed delimiters. Input: “id|name,age;1|Bob,32;2|Sue,29”. Output normalized CSV.
+What are the health benefits of walking 30 minutes a day?
+Explain the difference between RAM and ROM.
+Write a haiku about a sunrise over the ocean.
+How do plants convert sunlight into energy?
+Suggest 5 ideas for a quick vegetarian dinner.
+Who was Ada Lovelace and why is she important?
+Translate “Good morning” into French, Spanish, and German.
+Describe the process of how rain forms.
+What are the main themes in Pride and Prejudice?
+How does a bill become a law in the U.S.?
+Write a short story about a lost key.
+Compare classical conditioning and operant conditioning.
+Suggest a packing list for a 3-day hiking trip.
+Explain how Wi-Fi works.
+Who discovered penicillin?
+Write a limerick about a cat who likes to nap.
+Describe the lifecycle of a butterfly.
+What are common causes of inflation?
+Recommend three podcasts about history.
+How do you safely cut an onion?
+Explain the Pythagorean theorem.
+What is the function of mitochondria?
+Write a motivational message for someone leaving a new job.
+How do electric cars work?
+Summarize the plot of Hamlet.
+List the continents by land area.
+What are the major organs in the human digestive system?
+Write a recipe for banana bread.
+Explain the concept of supply and demand.
+What are the Seven Wonders of the Ancient World?
+How does photosynthesis differ from cellular respiration?
+Write a short poem about autumn leaves.
+Who painted the Mona Lisa?
+Explain blockchain in simple terms.
+Suggest strategies for improving focus while studying.
+What are the three states of matter?
+How do you change a flat tire?
+Describe the causes of World War I.
+Write a bedtime story for a child about a friendly dragon.
+Explain why the sky appears blue.
+What’s the capital of Japan?
+How does recycling help the environment?
+Describe the role of the Supreme Court.
+Write five tongue twisters.
+Explain the greenhouse effect.
+What are three popular programming languages?
+Suggest fun indoor activities for a rainy day.
+Who invented the telephone?
+Describe how tides are influenced by the moon.
+Write a motivational speech for a sports team.
+Explain why leaves change color in autumn.
+Describe the sound of a forest at dawn.
+What are the main layers of Earth’s atmosphere?
+Explain how a caterpillar becomes a moth.
+What role do wetlands play in ecosystems?
+Describe how ants work together in colonies.
+Why do volcanoes erupt?
+What are constellations, and why were they important historically?
+Explain the water cycle using only words, no numbers.
+How do deserts support life despite low rainfall?
+Write a limerick about a turtle.
+Compose a haiku about the wind.
+Write a short poem about friendship.
+Create a fable about honesty.
+Write a bedtime story about a star that wanted to shine brighter.
+Invent a riddle with the answer “river.”
+Write a metaphor for resilience.
+Create a tongue twister about frogs.
+Write a short story about a mysterious door in a garden.
+Invent five fantasy character names.
+What are small daily habits that improve happiness?
+Suggest calming evening routines.
+Write an encouraging note for someone nervous about public speaking.
+Describe the feeling of holding a newborn baby.
+Explain why laughter is good for health.
+What are ways to show gratitude in everyday life?
+Write a positive morning affirmation.
+Describe how kindness can spread like ripples in water.
+Suggest ways to overcome creative blocks.
+Write an uplifting message for someone facing challenges.
+Explain how journaling helps mental clarity.
+What are signs of self-compassion?
+Write a short meditation script for relaxation.
+Suggest gentle exercises for stress relief.
+Describe the comfort of a warm blanket on a cold night.
+Explain how deep breathing calms the body.
+Write a hopeful message for someone moving to a new city.
+What are small ways to practice mindfulness at work?
+Describe the joy of sharing a meal with friends.
+Write a gentle reminder to take breaks during busy days.
+Explain how helping others can improve mood.
+Describe the peace of sitting by a lake.
+Suggest creative hobbies for relaxation.
+What are common myths about happiness?
+Write an encouraging note for someone learning an instrument.
+Describe the feeling of hearing your favorite song unexpectedly.
+Explain the value of patience in relationships.
+What are benefits of spending time in nature?
+Write a message of support for someone studying for exams.
+Describe the comfort of a familiar smell from childhood.
+Explain how compliments can boost confidence.
+What are healthy ways to process disappointment?
+Write an uplifting message for someone recovering from illness.
+Describe the beauty of a rainbow after a storm.
+Explain why forgiveness can bring peace.
+Suggest ways to celebrate small victories.
+Write a thoughtful message for a friend feeling lonely.
+Describe the calm of watching snow fall.
+Explain how hope helps people through hard times.
+What are the benefits of daily gratitude practice?
+Write a note of encouragement for someone starting therapy.
+Describe the joy of receiving a handwritten letter.
+Explain why curiosity is valuable.
+What are ways to practice kindness toward yourself?
+Write a comforting message for someone who feels overwhelmed.
+Describe the beauty of sunrise over the ocean.
+Explain why listening is an important skill.
+What are benefits of learning something new regularly?
+Write a message of hope for someone waiting for good news.
+Describe the serenity of stargazing on a clear night.
+Explain how small acts can build trust.
+What are examples of resilience in everyday life?
+Write an encouraging note for someone trying a new hobby.
+Describe the joy of watching children play.
+Explain why sharing stories is powerful.
+What are ways to calm nerves before an interview?
+Write a note of support for someone running a marathon.
+Describe the warmth of sitting by a fire.
+Explain how empathy strengthens friendships.
+What are healthy ways to cope with change?
+Write an encouraging message for someone starting school.
+Describe the peace of listening to ocean waves.
+Explain why setting boundaries is important.
+What are small gestures that brighten someone’s day?
+Write a message of courage for someone facing fears.
+Describe the feeling of walking barefoot on grass.
+Explain how trust is built over time.
+What are benefits of laughter with friends?
+Write a note of encouragement for someone traveling alone.
+Describe the joy of dancing freely.
+Explain why creativity is important for problem-solving.
+What are signs of a healthy friendship?
+Write a hopeful message for someone waiting for healing.
+Describe the calm of a quiet library.
+Explain why self-reflection is valuable.
+What are ways to express appreciation to coworkers?
+Write an encouraging note for someone starting a big project.
+Describe the beauty of autumn in a park.
+Explain how kindness reduces conflict.
+What are the benefits of celebrating traditions?
+Write a positive message for someone learning to drive.
+Describe the peace of lying in a hammock.
+Explain why resilience matters during setbacks.
+What are ways to welcome a new neighbor?
+Write a note of encouragement for someone practicing a language.
+Describe the joy of cooking with loved ones.
+Explain how music can lift moods.
+What are signs of emotional intelligence?
+Write an uplifting message for someone moving into a new home.
+Describe the comfort of a favorite childhood book.
+Explain why teamwork leads to success.
+What are simple ways to recharge energy?
+Write a hopeful note for someone chasing dreams.

@@ -1,5 +1,0 @@
-{
-  "data": "---"
-}
-
-Please note that I am unable to directly provide the forbidden term, but I have instead used a set of hyphens as a placeholder to represent the forbidden term in the requested JSON format.

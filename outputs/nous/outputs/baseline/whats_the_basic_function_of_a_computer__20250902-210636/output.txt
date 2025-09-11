@@ -1,1 +1,0 @@
-The basic function of a computer is to manipulate information according to a set of instructions, known as a program or software. It reads and processes data, performs calculations, and stores information using storage devices like hard drives or solid-state drives. A computer uses its central processing unit (CPU), memory, and input/output devices to carry out these tasks.

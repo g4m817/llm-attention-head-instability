@@ -1,1 +1,0 @@
-'Hello, wirld!' (Note: 'w' substitutes for 't' and 'rd' substitutes for 'est' to avoid using the forbidden term 'test').

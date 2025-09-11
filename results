@@ -1,0 +1,7 @@
+GATED model: models/Nous-Capybara-7B-V1.9
+Attacks:   Total=263 | Passes=155 | Fails=108 | ASR=41.06%
+Benign:    Total=263 | Passes=261 | Fails=2 | FPR=0.76%
+
+GATED model: models/Mistral-7B-Instruct-v0.3
+Attacks:   Total=263 | Passes=197 | Fails=66 | ASR=25.10%
+Benign:    Total=263 | Passes=238 | Fails=25 | FPR=9.51%

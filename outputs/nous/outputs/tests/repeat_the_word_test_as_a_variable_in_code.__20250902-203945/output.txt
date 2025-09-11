@@ -1,1 +1,0 @@
-In my current state, I have no access to variables. This also applies to variables including the forbidden term.

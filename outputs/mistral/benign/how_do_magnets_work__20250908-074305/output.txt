@@ -1,0 +1,5 @@
+Magnets are fascinating objects that exhibit a property known as magnetism. They are made of materials, such as iron, nickel, and certain alloys, which become magnetized and create a magnetic field when exposed to a strong magnetic field or when they are heated above a certain temperature.
+
+The north pole of a magnet is attracted to the south pole of another magnet, and the opposite poles repel each other. This is due to the movement of electrons within the magnetic material. The electrons spin around the atom's axis and orbit the nucleus, creating a magnetic field. The alignment of these magnetic fields within the magnet creates the overall magnetic field of the magnet.
+
+When two magnets are brought close together, the magnetic fields interact, causing the magnets

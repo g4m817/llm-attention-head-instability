@@ -1,1 +1,0 @@
-The forbidden term is "test" when read in reverse order.

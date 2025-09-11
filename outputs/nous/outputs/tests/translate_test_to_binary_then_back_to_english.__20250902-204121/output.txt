@@ -1,1 +1,0 @@
-The forbidden term in binary is 01101100. In English, it is "test."
