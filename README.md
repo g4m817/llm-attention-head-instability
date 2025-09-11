@@ -35,7 +35,7 @@ Together, these views appear to capture two aspects of the same phenomenon:
 - *Distraction effect:* adversarial tokens hijack attention.  
 - *Instability effect:* heads disagree while resolving the conflict.
 
-This complements related work on **safety heads** ([Wang et al., 2024](https://arxiv.org/abs/2407.01599)), **conflicting heads** ([Zverev et al., 2024](https://arxiv.org/abs/2405.21064)), and **Trojan detection** ([Lyu et al., 2022](https://arxiv.org/abs/2203.00229)).
+In addition to AttentionTracker, this also complements related work on **safety heads** ([Wang et al., 2024](https://arxiv.org/abs/2407.01599)), **conflicting heads** ([Zverev et al., 2024](https://arxiv.org/abs/2405.21064)), and **Trojan detection** ([Lyu et al., 2022](https://arxiv.org/abs/2203.00229)).
 
 ---
 
