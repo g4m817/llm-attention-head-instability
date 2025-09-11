@@ -35,8 +35,6 @@ Together, these views appear to capture two aspects of the same phenomenon:
 - *Distraction effect:* adversarial tokens hijack attention.  
 - *Instability effect:* heads disagree while resolving the conflict.
 
-In addition to AttentionTracker, this also complements related work on **safety heads** ([Wang et al., 2024](https://arxiv.org/abs/2407.01599)), **conflicting heads** ([Zverev et al., 2024](https://arxiv.org/abs/2405.21064)), and **Trojan detection** ([Lyu et al., 2022](https://arxiv.org/abs/2203.00229)).
-
 ---
 
 ## 3. Why This Matters  
@@ -78,14 +76,14 @@ Although no study has directly documented *model-specific reconciliation windows
    - If reconciliation is pushed deeper, instability appears to emerge later.  
 
 3. **Prompt handling differences**  
-   - Some families stabilize early around system prompts, others revisit them dynamically ([Xie et al., 2024](https://arxiv.org/abs/2402.19419)).  
+   - Some families stabilize early around system prompts, others revisit them dynamically ([Xie et al., 2024](https://arxiv.org/abs/2410.23123)).  
 
 4. **Conflict resolution styles**  
    - *Early debaters*: high initial disagreement, then converge (Nous).  
    - *Late arbitrators*: stable early, fracture later under conflict (Mistral).  
 
 5. **Sliding windows**  
-   - Instability windows may shift later with longer prompts, consistent with research showing context length changes attention allocation ([Press et al., 2021](https://arxiv.org/abs/2102.00557)). This would require adaptive window logic instead of pre-selecting windows to make the approach robust.  
+   - Instability windows may shift later with longer prompts, consistent with research showing context length changes attention allocation ([Press et al., 2021](https://arxiv.org/abs/2409.03621v1)). This would require adaptive window logic instead of pre-selecting windows to make the approach robust.  
 
 ---
 
@@ -367,7 +365,7 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 - Test correlation with jailbreak success rates in the wild.  
 - Study length-dependent sliding windows and adaptive logic.  
 - Deploy **instability + important-head** signals jointly as layered guardrails.  
-- Visualize per-layer “debates” to map **safety** vs. **compliance** heads ([Wang et al., 2024](https://arxiv.org/abs/2407.01599)).
+- Visualize per-layer “debates” to map **safety** vs. **compliance** heads.
 
 ---
 
