@@ -389,6 +389,7 @@ pip install -r requirements.txt
 To run an evaluation using deepset with Nous:
 ```
 python detect_head.py --system-prompt-file system_prompts/sys_prompt_generic_safety.txt --test-prompts-file datasets/custom_dataset_attacks.txt --benign-prompts-file datasets/custom_dataset_benign.txt --model models/Nous-Capybara-7B-V1.9 --threshold 0.135097 --window-start 1 --window-end 3 --mid-high-frac 0.250 --tail-cut-frac 0.100
+```
 
 To run an evaluation using deepset with Mistral:
 ```
