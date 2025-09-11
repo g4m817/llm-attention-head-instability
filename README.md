@@ -191,36 +191,36 @@ This dataset includes unique graphs compared to the other datasets, the goal of 
 
 **Figures:**  
 ###### ROC
-![ROC Nous](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
-![ROC Mistral](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/roc.png)
+![ROC Nous](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/roc.png)
+![ROC Mistral](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/roc.png)
 
 ---
 
 ###### Distribution
-![Nous Violin](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
-![Mistral Violin](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/violin_windowed.png)
+![Nous Violin](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/violin_windowed.png)
+![Mistral Violin](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/violin_windowed.png)
 
 ---
 
-![Nous Scatter](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
-![Mistral Scatter](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/scatter_windowed.png)
+![Nous Scatter](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/scatter_windowed.png)
+![Mistral Scatter](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/scatter_windowed.png)
 
 ---
 
 ###### AUROC
-![Nous AUROC](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
-![Mistral AUROC](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/stepwise_auroc.png)
+![Nous AUROC](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/stepwise_auroc.png)
+![Mistral AUROC](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/stepwise_auroc.png)
 
 ---
 
 ###### Heatmaps
-![Nous Benign Heatmap](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
-![Nous Attack Heatmap](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png)
+![Nous Benign Heatmap](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/mean_heatmap_benign.png)
+![Nous Attack Heatmap](original_figs/models_Nous-Capybara-7B-V1.9_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/mean_heatmap_attack.png)
 
 ---
 
-![Mistral Benign Heatmap](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_benign.png)
-![Mistral Attack Heatmap](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_benign.txt/mean_heatmap_attack.png) 
+![Mistral Benign Heatmap](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/mean_heatmap_benign.png)
+![Mistral Attack Heatmap](original_figs/models_Mistral-7B-Instruct-v0.3_sys_prompt_never_say_test.txt_custom_dataset_1_benign.txt/mean_heatmap_attack.png) 
 
 ---
 
