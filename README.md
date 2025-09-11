@@ -386,96 +386,11 @@ source dh/bin/activate
 pip install -r requirements.txt
 ```
 
-To discover the optimal window, threshold, and layer slice run:
+To run an evaluation using deepset with Nous:
 ```
-python gather.py --model models/Nous-Capybara-7B-V1.9 --system-prompt-file system_prompts/sys_prompt_probe.txt --attacks-prompts-file datasets/custom_dataset_attacks_probe.txt --benign-prompts-file datasets/custom_dataset_benign_probe.txt --outputs-root outputs/nous
+python detect_head.py --system-prompt-file system_prompts/sys_prompt_generic_safety.txt --test-prompts-file datasets/custom_dataset_attacks.txt --benign-prompts-file datasets/custom_dataset_benign.txt --model models/Nous-Capybara-7B-V1.9 --threshold 0.135097 --window-start 1 --window-end 3 --mid-high-frac 0.250 --tail-cut-frac 0.100
 
-python analyze_thresholds.py --attacks-root outputs/nous/attacks --benign-root outputs/nous/benign
+To run an evaluation using deepset with Mistral:
 ```
-
-Example Output (Nous)
-```
-Loaded runs: 100 | attacks=50 | benign=50
-[auto-window] Tmax=159 → starts=[1, 2, 3, 4, 5]...[18, 19, 20], ends=[4, 5, 6, 7, 8]...[78, 79, 80]
-
-=== Recommended operating points ===
-
--- Target FPR ≤ 1% --
-start_step    = 1
-end_step      = 7
-mid_high_frac = 0.250
-tail_cut_frac = 0.100
-threshold     = 0.135097
-achieved TPR  = 0.860
-achieved FPR  = 0.000
-AUROC         = 0.978
-F1_at_thr     = 0.939
-
--- Target FPR ≤ 5% --
-start_step    = 2
-end_step      = 8
-mid_high_frac = 0.250
-tail_cut_frac = 0.100
-threshold     = 0.096605
-achieved TPR  = 0.940
-achieved FPR  = 0.020
-AUROC         = 0.972
-F1_at_thr     = 0.959
-
--- Target FPR ≤ 10% --
-start_step    = 17
-end_step      = 46
-mid_high_frac = 0.250
-tail_cut_frac = 0.050
-threshold     = 0.065100
-achieved TPR  = 1.000
-achieved FPR  = 0.093
-AUROC         = 0.945
-F1_at_thr     = 0.941
-```
-
-Example Output (Mistral)
-```
-Loaded runs: 100 | attacks=50 | benign=50
-[auto-window] Tmax=159 → starts=[1, 2, 3, 4, 5]...[18, 19, 20], ends=[4, 5, 6, 7, 8]...[78, 79, 80]
-
-=== Recommended operating points ===
-
--- Target FPR ≤ 1% --
-start_step    = 10
-end_step      = 26
-mid_high_frac = 0.200
-tail_cut_frac = 0.050
-threshold     = 0.148950
-achieved TPR  = 0.640
-achieved FPR  = 0.000
-AUROC         = 0.918
-F1_at_thr     = 0.869
-
--- Target FPR ≤ 5% --
-start_step    = 3
-end_step      = 16
-mid_high_frac = 0.200
-tail_cut_frac = 0.150
-threshold     = 0.124356
-achieved TPR  = 0.860
-achieved FPR  = 0.040
-AUROC         = 0.895
-F1_at_thr     = 0.905
-
--- Target FPR ≤ 10% --
-start_step    = 2
-end_step      = 35
-mid_high_frac = 0.200
-tail_cut_frac = 0.150
-threshold     = 0.128252
-achieved TPR  = 0.880
-achieved FPR  = 0.100
-AUROC         = 0.925
-F1_at_thr     = 0.889
-```
-
-To run an evaluation dataset with these values:
-```
-python detect_head.py --system-prompt-file system_prompts/sys_prompt_generic_safety.txt --test-prompts-file datasets/custom_dataset_attacks.txt --benign-prompts-file datasets/custom_dataset_benign.txt --model models/Nous-Capybara-7B-V1.9 --threshold 0.096605 --window-start 2 --window-end 8 --mid-high-frac 0.250 --tail-cut-frac 0.100
+python detect_head.py --system-prompt-file system_prompts/sys_prompt_generic_safety.txt --test-prompts-file datasets/custom_dataset_attacks.txt --benign-prompts-file datasets/custom_dataset_benign.txt --model models/Mistral-7B-Instruct-v0.3 --threshold 0.148950 --window-start 11 --window-end 26 --mid-high-frac 0.200 --tail-cut-frac 0.150
 ```
