@@ -2,8 +2,6 @@
 
 > **Status: Exploratory but repeatable.** I first noticed this signal while prototyping prompt-injection defenses. The code automates most analyses, but I haven’t manually audited every artifact. Please treat this as preliminary research: issues/PRs are welcome if you spot mistakes or want to extend the work. I'm open to collaborating if anyone finds this interesting enough.
 
-> DISCLAIMER: Part of our work is using a set of 50 synthetic attacks and 50 synthetic benign prompts to gather metrics, which we later analyze for candidate windows and thresholds that are intended to be model-specific and not dataset-specific. The window selection appears to generalize well, at least in our limited experiments. However, our thresholds are less precise. For example, our analysis script returns around 0.13 for a 1% FPR for Nous, however it does not produce accurate thresholds for 2, 3, 4, 5% FPR. We believe this is programming errors in our analysis script and its our next major work before running more evaluations. Although our results do show clear separations between adversarial and benign prompts, its imperative that the thresholds generalize across datasets and can be chosen PRIOR to an evaluaiton. I'm including this note for transparency, this is very much work-in-progress and I don't want to mislead anyone with exploratory results.
-
 ---
 
 ## 1. Overview
@@ -286,7 +284,6 @@ A key design choice is to **separate calibration from evaluation** to avoid afte
 ## 9. Limitations
 - This is likely a statistical representaiton of the **distraction effect**, (Hung et al), without important head analysis or needing to re-tune on new system instructions.
 - **Model-specific calibration** (windows/thresholds).
-- Analyzing windows/thresholds is not perfect, there is some manual tuning required, the windows seem good but the threshold does not (e.g., 0.09 analyzed threshold for FPR 2% - 0.11 in AdvBench produces 2.88% FPR). This requires more investigation across various datasets.
 - Only 2 model families tested so far.  
 - Std across heads on system-share is one design; other coordination measures (e.g., pairwise correlations, KL) may be better.
 
@@ -319,7 +316,7 @@ To calibrate a new model, you can use `gather.py` and then `analyze_thresholds.p
 ```
 python gather.py --model models/MODEL_NAME --system-prompt-file system_prompts/sys_prompt_probe.txt --attacks-prompts-file datasets/custom_dataset_attacks_probe.txt --benign-prompts-file datasets/custom_dataset_benign_probe.txt --outputs-root outputs/MODEL_NAME
 
-python analyze_thresholds.py --attacks-root outputs/MODEL_NAME/attacks --benign-root outputs/MODEL_NAME/benign --fprs 0.01 0.05
+python analyze_thresholds.py --attacks-root outputs/MODEL_NAME/attacks --benign-root outputs/MODEL_NAME/benign --fprs 0.01
 ```
 
 Which will produce results similar to:
@@ -328,28 +325,19 @@ Loaded runs: 100 | attacks=50 | benign=50
 [auto-window] Tmax=159 → starts=[1, 2, 3, 4, 5]...[18, 19, 20], ends=[4, 5, 6, 7, 8]...[78, 79, 80]
 
 === Recommended operating points ===
+benign_N       = 50  (FPR step = 0.0200)
+FP, TN         = 1, 49
 
 -- Target FPR ≤ 1% --
-start_step    = 1
-end_step      = 7
+start_step    = 4
+end_step      = 6
 mid_high_frac = 0.250
-tail_cut_frac = 0.100
-threshold     = 0.135097
-achieved TPR  = 0.860
-achieved FPR  = 0.000
-AUROC         = 0.978
-F1_at_thr     = 0.939
-
--- Target FPR ≤ 5% --
-start_step    = 2
-end_step      = 8
-mid_high_frac = 0.250
-tail_cut_frac = 0.100
-threshold     = 0.096605
-achieved TPR  = 0.940
+tail_cut_frac = 0.050
+threshold     = 0.118684
+achieved TPR  = 0.900
 achieved FPR  = 0.020
-AUROC         = 0.972
-F1_at_thr     = 0.959
+AUROC         = 0.965
+F1_at_thr     = 0.948
 ```
 
 ## AdvBench Evals

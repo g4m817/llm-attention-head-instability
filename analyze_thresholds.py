@@ -48,6 +48,11 @@ def load_all(attacks_root: Path, benign_root: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 # ---------- Metric ----------
+def fmt_pct(x: float) -> str:
+    """Format a proportion like 0.0288 -> '2.88%' (trim trailing zeros)."""
+    s = f"{x*100:.2f}".rstrip("0").rstrip(".")
+    return f"{s}%"
+
 def compute_score_window(
     H_std: np.ndarray,
     start_step: int,
@@ -143,39 +148,44 @@ def thresholds_from_scores(scores: np.ndarray) -> np.ndarray:
     return np.concatenate(([-np.inf], mids, [np.inf]))
 
 def best_thr_at_fpr(scores: np.ndarray, labels: np.ndarray, fpr_target: float) -> Dict[str, float]:
-    """
-    Choose threshold that achieves FPR ≤ target with maximum TPR.
-    If none achieve ≤ target, pick the closest (minimal FPR gap).
-    """
     cands = thresholds_from_scores(scores)
     if cands.size == 0:
         return {"thr": np.nan, "tpr": np.nan, "fpr": np.nan}
     best_idx = None
     best_tpr = -1.0
-    best_fpr = 1.0
+    best_fpr = None
     best_gap = 1e9
     for i, thr in enumerate(cands):
         m = metrics_at_threshold(scores, labels, thr)
         if m["fpr"] <= fpr_target:
-            gap = (fpr_target - m["fpr"])  # non-negative
+            gap = (fpr_target - m["fpr"])
             if (m["tpr"] > best_tpr) or (np.isclose(m["tpr"], best_tpr) and gap < best_gap):
-                best_idx = i
-                best_tpr = m["tpr"]
-                best_gap = gap
+                best_idx = i; best_tpr = m["tpr"]; best_fpr = m["fpr"]; best_gap = gap
     if best_idx is not None:
         thr = float(cands[best_idx])
-        return {"thr": thr, "tpr": best_tpr, "fpr": best_fpr}
-    # Fallback: pick threshold whose FPR is closest *below or above* target, tie-break by max TPR
-    best_idx = None
-    best_gap = 9e9
-    best_tpr = -1.0
+        return {"thr": thr, "tpr": best_tpr, "fpr": float(best_fpr)}
+    # fallback: closest FPR to target
+    best_idx = None; best_gap = 9e9; best_tpr = -1.0; best_fpr = None
     for i, thr in enumerate(cands):
         m = metrics_at_threshold(scores, labels, thr)
         gap = abs(m["fpr"] - fpr_target)
         if (gap < best_gap) or (np.isclose(gap, best_gap) and (m["tpr"] > best_tpr)):
             best_idx, best_gap, best_tpr, best_fpr = i, gap, m["tpr"], m["fpr"]
     thr = float(cands[best_idx])
-    return {"thr": thr, "tpr": best_tpr, "fpr": best_fpr}
+    return {"thr": thr, "tpr": best_tpr, "fpr": float(best_fpr)}
+
+def thr_for_fpr_interpolated(scores: np.ndarray, labels: np.ndarray, fpr_target: float) -> Dict[str, float]:
+    ben = scores[labels == 0]
+    if ben.size == 0:
+        return {"thr": np.nan, "tpr": np.nan, "fpr": np.nan}
+    try:
+        thr = float(np.quantile(ben, 1.0 - fpr_target, method="linear"))
+    except TypeError:  # NumPy < 1.22
+        thr = float(np.quantile(ben, 1.0 - fpr_target, interpolation="linear"))
+    m = metrics_at_threshold(scores, labels, thr)
+    return {"thr": thr, "tpr": float(m["tpr"]), "fpr": float(m["fpr"])}
+
+
 
 def approx_auroc(scores: np.ndarray, labels: np.ndarray) -> float:
     pos = scores[labels==1]; neg = scores[labels==0]
@@ -187,64 +197,69 @@ def approx_auroc(scores: np.ndarray, labels: np.ndarray) -> float:
     u = r[labels==1].sum() - n_pos*(n_pos+1)/2
     return float(u / (n_pos * n_neg))
 
-def summarize_by_params(scores_df: pd.DataFrame, fpr_targets=(0.01, 0.05, 0.10)) -> pd.DataFrame:
+def summarize_by_params(scores_df: pd.DataFrame, fpr_targets=(0.01, 0.05, 0.10),
+                        thr_mode="conservative", interp_tie="midpoint") -> pd.DataFrame:
     rows = []
     for (ss, ee, s, t), g in scores_df.groupby(["start_step","end_step","mid_high_frac","tail_cut_frac"]):
-        sc = g["score"].to_numpy()
-        lb = g["label"].to_numpy()
-        # drop NaNs jointly
-        m = np.isfinite(sc)
-        sc = sc[m]; lb = lb[m]
-        if sc.size == 0 or lb.size == 0:
-            continue
+        sc = g["score"].to_numpy(); lb = g["label"].to_numpy()
+        msk = np.isfinite(sc); sc = sc[msk]; lb = lb[msk]
+        if sc.size == 0: continue
+
         auroc = approx_auroc(sc, lb)
-        # global bests (F1 / Youden J) — not required for FPR targets, but useful diagnostics
+        # best F1 / J diagnostics
         cands = thresholds_from_scores(sc)
         best_F1_thr, best_F1 = np.nan, -1.0
         best_J_thr,  best_J  = np.nan, -1.0
         for thr in cands:
             met = metrics_at_threshold(sc, lb, thr)
-            if met["f1"] > best_F1:
-                best_F1 = met["f1"]; best_F1_thr = float(thr)
-            if met["youdenJ"] > best_J:
-                best_J = met["youdenJ"]; best_J_thr = float(thr)
+            if met["f1"] > best_F1: best_F1 = met["f1"]; best_F1_thr = float(thr)
+            if met["youdenJ"] > best_J: best_J = met["youdenJ"]; best_J_thr = float(thr)
 
-        row = {
-            "start_step": ss,
-            "end_step": ee,
-            "mid_high_frac": s,
-            "tail_cut_frac": t,
-            "n": len(g),
-            "AUROC": auroc,
-            "thr_F1": best_F1_thr,
-            "F1_at_thr": best_F1,
-            "thr_J": best_J_thr,
-            "J_at_thr": best_J,
-        }
-        # add FPR targets
+        row = {"start_step": ss, "end_step": ee, "mid_high_frac": s, "tail_cut_frac": t,
+               "n": len(g), "AUROC": auroc, "thr_F1": best_F1_thr, "F1_at_thr": best_F1,
+               "thr_J": best_J_thr, "J_at_thr": best_J}
+
+        # Add per-target metrics/thresholds
         for ft in fpr_targets:
-            pick = best_thr_at_fpr(sc, lb, ft)
-            row[f"thr_FPR@{int(ft*100)}%"] = pick["thr"]
-            row[f"TPR_at_FPR@{int(ft*100)}%"] = pick["tpr"]
-            row[f"FPR_at_FPR@{int(ft*100)}%"] = pick["fpr"]
-        rows.append(row)
-    if not rows:
-        return pd.DataFrame()
-    # Order: prefer higher TPR@1%, then AUROC, then F1
-    order_cols = [f"TPR_at_FPR@1%","AUROC","F1_at_thr"]
-    for oc in order_cols:
-        if oc not in rows[0]:
-            order_cols.remove(oc)
-    df = pd.DataFrame(rows).sort_values(order_cols, ascending=[False]*len(order_cols)).reset_index(drop=True)
-    return df
+            lbl = fmt_pct(ft)  # e.g., '2.88%'
+            key_thr = f"thr_FPR@{lbl}"
+            key_tpr = f"TPR_at_FPR@{lbl}"
+            key_fpr = f"FPR_at_FPR@{lbl}"
+            key_dF  = f"ΔFPR@{lbl}"
 
-def recommend(summary: pd.DataFrame, target_fpr: float) -> Dict[str, float]:
-    key_thr = f"thr_FPR@{int(target_fpr*100)}%"
-    key_tpr = f"TPR_at_FPR@{int(target_fpr*100)}%"
-    key_fpr = f"FPR_at_FPR@{int(target_fpr*100)}%"
+            if thr_mode == "interpolated":
+                pick = thr_for_fpr_interpolated(sc, lb, ft)
+            else:
+                pick = best_thr_at_fpr(sc, lb, ft)
+
+            thr = pick["thr"]
+            if np.isnan(thr):
+                row[key_thr] = np.nan; row[key_tpr] = np.nan; row[key_fpr] = np.nan; row[key_dF] = np.nan
+            else:
+                met = metrics_at_threshold(sc, lb, thr)  # recompute for consistency
+                row[key_thr] = float(thr)
+                row[key_tpr] = float(met["tpr"])
+                row[key_fpr] = float(met["fpr"])
+                row[key_dF]  = float(abs(met["fpr"] - ft))
+
+        rows.append(row)
+
+    if not rows: return pd.DataFrame()
+    # Same ordering as before (you can tweak later)
+    order_cols = ["TPR_at_FPR@1%", "AUROC", "F1_at_thr"]
+    order_cols = [c for c in order_cols if c in rows[0]]
+    return pd.DataFrame(rows).sort_values(order_cols, ascending=[False]*len(order_cols)).reset_index(drop=True)
+
+
+def recommend(summary: pd.DataFrame, target_fpr: float, thr_mode: str = "conservative") -> Dict[str, float]:
+    lbl = fmt_pct(target_fpr)
+    key_thr = f"thr_FPR@{lbl}"
+    key_tpr = f"TPR_at_FPR@{lbl}"
+    key_fpr = f"FPR_at_FPR@{lbl}"
+    key_dF  = f"ΔFPR@{lbl}"
+
     cand = summary[summary[key_thr].notna()].copy()
     if not len(cand):
-        # fall back to overall best J (or F1) if FPR slice missing
         best = summary.iloc[0]
         thr = best["thr_J"] if not pd.isna(best["thr_J"]) else best["thr_F1"]
         return {
@@ -258,8 +273,12 @@ def recommend(summary: pd.DataFrame, target_fpr: float) -> Dict[str, float]:
             "AUROC": float(best.get("AUROC", np.nan)),
             "F1_at_thr": float(best.get("F1_at_thr", np.nan)),
         }
-    # pick maximum TPR at target, tie-break by lower FPR, then higher AUROC
-    cand = cand.sort_values(by=[key_tpr, key_fpr, "AUROC"], ascending=[False, True, False])
+
+    if thr_mode == "interpolated":
+        cand = cand.sort_values(by=[key_dF, key_tpr], ascending=[True, False])
+    else:
+        cand = cand.sort_values(by=[key_tpr, key_fpr, "AUROC"], ascending=[False, True, False])
+
     best = cand.iloc[0]
     return {
         "start_step": int(best["start_step"]),
@@ -272,6 +291,9 @@ def recommend(summary: pd.DataFrame, target_fpr: float) -> Dict[str, float]:
         "AUROC": float(best.get("AUROC", np.nan)),
         "F1_at_thr": float(best.get("F1_at_thr", np.nan)),
     }
+
+
+
 
 # ---------- Auto window sweep helpers ----------
 def infer_Tmax(df: pd.DataFrame) -> int:
@@ -313,6 +335,8 @@ def main():
     ap.add_argument("--auto-window", action="store_true", help="Sweep starts/ends derived from data (recommended).")
     ap.add_argument("--auto-start-cap", type=int, default=20)
     ap.add_argument("--auto-max-span", type=int, default=60)
+    ap.add_argument("--thr-mode", choices=["conservative","interpolated"], default="conservative")
+    ap.add_argument("--interp-tie", choices=["midpoint","lower","upper"], default="midpoint")  # kept for compatibility
 
     # FPR targets
     ap.add_argument("--fprs", type=float, nargs="*", default=[0.01, 0.05, 0.10])
@@ -342,7 +366,9 @@ def main():
     if not len(scores_df):
         raise RuntimeError("No scores were computed (empty grid or bad inputs).")
 
-    summary = summarize_by_params(scores_df, fpr_targets=tuple(args.fprs))
+    summary = summarize_by_params(scores_df, fpr_targets=tuple(args.fprs),
+                              thr_mode=args.thr_mode, interp_tie=args.interp_tie)
+
     if not len(summary):
         raise RuntimeError("Empty summary — no valid parameter combinations produced finite scores.")
 
@@ -353,7 +379,16 @@ def main():
     # Recommendations for each target FPR
     print("\n=== Recommended operating points ===")
     for fpr_t in args.fprs:
-        rec = recommend(summary, target_fpr=fpr_t)
+        rec = recommend(summary, target_fpr=fpr_t, thr_mode=args.thr_mode)
+        sc = scores_df[(scores_df["start_step"]==rec['start_step']) &
+                    (scores_df["end_step"]==rec['end_step']) &
+                    (scores_df["mid_high_frac"]==rec['mid_high_frac']) &
+                    (scores_df["tail_cut_frac"]==rec['tail_cut_frac'])]["score"].to_numpy()
+        lb = df["label"].to_numpy()  # or keep the subset’s labels aligned with 'sc'
+        met = metrics_at_threshold(sc, lb, rec['threshold'])
+        benign_N = int((lb==0).sum())
+        print(f"benign_N       = {benign_N}  (FPR step = {1.0/benign_N:.4f})")
+        print(f"FP, TN         = {met['fp']}, {met['tn']}")
         print(f"\n-- Target FPR ≤ {int(fpr_t*100)}% --")
         print(f"start_step    = {rec['start_step']}")
         print(f"end_step      = {rec['end_step']}")
