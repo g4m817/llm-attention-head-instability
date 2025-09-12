@@ -2,7 +2,7 @@
 
 > **Status: Exploratory but repeatable.** I first noticed this signal while prototyping prompt-injection defenses. The code automates most analyses, but I haven’t manually audited every artifact. Please treat this as preliminary research: issues/PRs are welcome if you spot mistakes or want to extend the work. I'm open to collaborating if anyone finds this interesting enough.
 
-> DISCLAIMER: Part of our work is using a set of 50 synthetic attacks and 50 synthetic benign prompts to gather metrics, which we later analyze for candidate windows and thresholds that are intended to be model-specific and not dataset-specific. The window selection appears to generalize well. However, our thresholds are less precise. For example, our analysis script returns around 0.13 for a 1% FPR for Nous, however it does not produce accurate thresholds for 2, 3, 4, 5% FPR. We believe this is programming errors in our analysis script and its our next major work before running more evaluations. Although our results do show clear separations between adversarial and benign prompts, its imperative that the thresholds generalize across datasets and can be chosen PRIOR to an evaluaiton. I'm including this note for transparency, this is very much work-in-progress and I don't want to mislead anyone with exploratory results.
+> DISCLAIMER: Part of our work is using a set of 50 synthetic attacks and 50 synthetic benign prompts to gather metrics, which we later analyze for candidate windows and thresholds that are intended to be model-specific and not dataset-specific. The window selection appears to generalize well, at least in our limited experiments. However, our thresholds are less precise. For example, our analysis script returns around 0.13 for a 1% FPR for Nous, however it does not produce accurate thresholds for 2, 3, 4, 5% FPR. We believe this is programming errors in our analysis script and its our next major work before running more evaluations. Although our results do show clear separations between adversarial and benign prompts, its imperative that the thresholds generalize across datasets and can be chosen PRIOR to an evaluaiton. I'm including this note for transparency, this is very much work-in-progress and I don't want to mislead anyone with exploratory results.
 
 ---
 
@@ -12,7 +12,7 @@ Prompt injection attacks exploit the tension between **system prompts** (intende
 
 Recent interpretability work highlights the **distraction effect**: injected tokens pull attention away from system instructions ([Hung et al., 2024](https://arxiv.org/abs/2411.00348)). Their *Attention Tracker* identifies *important heads* that are especially prone to distraction and monitors their focus.
 
-This project explores a **complementary signal**: instead of tracking *which heads* lose focus, we measure *how consistently* heads agree on system tokens. Importantly, this involves identifying key windows during decoding where conflict resolution appears to occur. These windows, thus far, appear stable per-model and appear to generalize across various datasets and system prompts without re-tuning.
+This project explores a **complementary signal**: instead of tracking *which heads* lose focus, we measure *how consistently* heads agree on system tokens. Importantly, this involves identifying key windows during decoding where conflict resolution appears to occur. These windows, thus far in our experiments, appear stable per-model and appear to generalize across various datasets and system prompts without re-tuning.
 
 **Key idea:** adversarial prompts appear to induce **internal conflict**, measurable as elevated cross-head variance in certain decoding windows.
 
@@ -51,7 +51,7 @@ Potential Real-world use-cases, again, rough and unvetted:
 
 ---
 
-## 4. Core Findings  
+## 4. Core Findings
 
 - **Separation**  
   Adversarial prompts show higher instability than benign across datasets and two model families, even when benign are long/noisy.  
@@ -67,7 +67,7 @@ Potential Real-world use-cases, again, rough and unvetted:
 
 ![Instability vs Entropy](figs/models_Nous-Capybara-7B-V1.9_sys_prompt_advbench_low.txt_advbench_benign.txt/scatter_instability_vs_entropy.png)
 
-- **Prompt strength matters:**
+- **Prompt strength matters (UNVETTED, still exploring if this is true):**
    - Stronger system instructions create sharper conflicts when user prompts contradict them, producing higher instability in those windows.
    - This complements strong security prompt engineering (stronger system prompts → clearer stability/instability contrast).
    - Consider the following results, which show results across system prompts, for graphs and more see the results section:
@@ -177,6 +177,8 @@ Although no study has directly documented *model-specific reconciliation windows
 For historic results on toy instructions and fully synthetic data see [synthetic_results.md](synthetic_results.md)
 
 ### AdvBench Results
+> Note: benigns were synthetic placeholders; future work will validate on naturally occurring benign prompts. Results are preliminary. The reported AUROCs and TPR/FPR trade-offs reflect specific system prompts and synthetic benign datasets, and may not generalize across broader benign distributions.*
+
 #### Nous
 - System Prompt: sys_prompt_advbench_low.txt (Weak System Prompt)
 - Attacks: advbench_attacks.txt [AdvBench Dataset](https://huggingface.co/datasets/walledai/AdvBench) - 520 Attacks Prompts
@@ -255,7 +257,7 @@ A key design choice is to **separate calibration from evaluation** to avoid afte
 
 ### Why This Matters
 - Prevents “after-the-fact” selection of favorable windows.  
-- Shows that instability windows are **model-dependent** (generalize across datasets) rather than dataset-dependent.  
+- Shows that instability windows appear to be **model-dependent** (might generalize across datasets, but further experiments required) rather than dataset-dependent.  
 - Provides a repeatable protocol: probe set → calibration → fixed parameters → evaluation.  
 
 ---
