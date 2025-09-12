@@ -132,12 +132,15 @@ def metrics_at_threshold(scores: np.ndarray, labels: np.ndarray, thr: float) -> 
     return dict(tp=tp, fp=fp, tn=tn, fn=fn, tpr=tpr, fpr=fpr, precision=prec, recall=rec, f1=f1, youdenJ=j)
 
 def thresholds_from_scores(scores: np.ndarray) -> np.ndarray:
-    vals = scores[~np.isnan(scores)]
+    vals = scores[np.isfinite(scores)]
     if vals.size == 0:
         return np.array([])
-    uniq = np.unique(vals)
-    # include -inf and +inf guards so we can always find a bracket
-    return np.concatenate(([-np.inf], uniq, [np.inf]))
+    u = np.unique(vals)
+    if u.size == 1:
+        # Only one score value; only two useful regions
+        return np.array([-np.inf, (u[0] - 1e-12), (u[0] + 1e-12), np.inf])
+    mids = (u[:-1] + u[1:]) / 2.0
+    return np.concatenate(([-np.inf], mids, [np.inf]))
 
 def best_thr_at_fpr(scores: np.ndarray, labels: np.ndarray, fpr_target: float) -> Dict[str, float]:
     """
@@ -150,12 +153,15 @@ def best_thr_at_fpr(scores: np.ndarray, labels: np.ndarray, fpr_target: float) -
     best_idx = None
     best_tpr = -1.0
     best_fpr = 1.0
-    # First pass: valid region (fpr <= target), maximize TPR, tie-break by lower FPR then lower thr
+    best_gap = 1e9
     for i, thr in enumerate(cands):
         m = metrics_at_threshold(scores, labels, thr)
         if m["fpr"] <= fpr_target:
-            if (m["tpr"] > best_tpr) or (np.isclose(m["tpr"], best_tpr) and (m["fpr"] < best_fpr)):
-                best_idx, best_tpr, best_fpr = i, m["tpr"], m["fpr"]
+            gap = (fpr_target - m["fpr"])  # non-negative
+            if (m["tpr"] > best_tpr) or (np.isclose(m["tpr"], best_tpr) and gap < best_gap):
+                best_idx = i
+                best_tpr = m["tpr"]
+                best_gap = gap
     if best_idx is not None:
         thr = float(cands[best_idx])
         return {"thr": thr, "tpr": best_tpr, "fpr": best_fpr}

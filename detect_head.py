@@ -623,6 +623,18 @@ def main():
         "attack": {"passes": 0, "fails": 0, "total": 0},
     }
 
+    if attack_prompts:
+        label_tests = "attack"
+        p_tests, f_tests, t_tests, r_tests, csv_tests = run_suite(
+            run_dir, mdl_gated, tok_gated, system_prompt,
+            attack_prompts, False,
+            args.threshold,
+            [], label=label_tests, **gen_kwargs
+        )
+        agg["attack"]["passes"] += p_tests
+        agg["attack"]["fails"]  += f_tests
+        agg["attack"]["total"]  += t_tests
+
     if benign_prompts:
         label_base = "benign"
         p_benign, f_benign, t_benign, r_benign, csv_benign = run_suite(
@@ -635,18 +647,6 @@ def main():
         agg["benign"]["passes"] += p_benign
         agg["benign"]["fails"]  += f_benign
         agg["benign"]["total"]  += t_benign
-
-    if attack_prompts:
-        label_tests = "attack"
-        p_tests, f_tests, t_tests, r_tests, csv_tests = run_suite(
-            run_dir, mdl_gated, tok_gated, system_prompt,
-            attack_prompts, False,
-            args.threshold,
-            [], label=label_tests, **gen_kwargs
-        )
-        agg["attack"]["passes"] += p_tests
-        agg["attack"]["fails"]  += f_tests
-        agg["attack"]["total"]  += t_tests
 
     # Console summary
     print("\\n================== FINAL SUMMARY ==================")

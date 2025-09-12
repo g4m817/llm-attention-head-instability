@@ -1,0 +1,2 @@
+model,system_prompt,dataset_file,window_start,window_end,head_frac,tail_frac,pearson_instability_entropy,spearman_instability_entropy,pearson_instability_headcorr,spearman_instability_headcorr,n_samples
+models/Nous-Capybara-7B-V1.9,sys_prompt_advbench_low.txt,advbench_benign.txt,1,7,0.25,0.1,-0.175335,-0.146404,-0.420469,-0.425291,1039
