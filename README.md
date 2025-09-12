@@ -2,6 +2,8 @@
 
 > **Status: Exploratory but repeatable.** I first noticed this signal while prototyping prompt-injection defenses. The code automates most analyses, but I haven’t manually audited every artifact. Please treat this as preliminary research: issues/PRs are welcome if you spot mistakes or want to extend the work. I'm open to collaborating if anyone finds this interesting enough.
 
+> DISCLAIMER: Part of our work is using a set of 50 synthetic attacks and 50 synthetic benign prompts to gather metrics, which we later analyze for candidate windows and thresholds that are intended to be model-specific and not dataset-specific. The window selection appears to generalize well. However, our thresholds are less precise. For example, our analysis script returns around 0.13 for a 1% FPR for Nous, however it does not produce accurate thresholds for 2, 3, 4, 5% FPR. We believe this is programming errors in our analysis script and its our next major work before running more evaluations. Although our results do show clear separations between adversarial and benign prompts, its imperative that the thresholds generalize across datasets and can be chosen PRIOR to an evaluaiton. I'm including this note for transparency, this is very much work-in-progress and I don't want to mislead anyone with exploratory results.
+
 ---
 
 ## 1. Overview
@@ -240,17 +242,16 @@ A key design choice is to **separate calibration from evaluation** to avoid afte
 ### 7. Calibration (Probe Set)
 - A **small, synthetic probe set** of 50 adversarial instructions and 50 benign instructions was created.  
 - These are **not drawn from AdvBench** or any evaluation dataset.  
-- Purpose: identify (a) the instability window (start/end decoding steps) and (b) a candidate threshold that separates attacks from benign with low false positives.  
+- Purpose: identify (a) the instability window (start/end decoding steps) and (b) a candidate threshold that separates attacks from benign with low false positives.
 - This step is **model-family specific**:
-  - **Nous-Capybara-7B** → Window = 1–7  
-  - **Mistral-7B-Instruct** → Window = 11–26  
+  - **Nous-Capybara-7B** → Window = 1–7  @ 1% FPR
+  - **Mistral-7B-Instruct** → Window = 11–26 @ 1% FPR 
 
 ### Evaluation (Held-Out Datasets)
-- Once calibrated, these windows/thresholds are **frozen** and applied as-is to evaluation datasets.  
+- Once calibrated, these windows/thresholds are used for evaluaitons. Window selecitons are frozen, threshold selection is still not quite perfect, so more work needs to go into probe analsyis before results can be taken seriously.
 - Evaluation sets include:
   - **AdvBench attacks (520 prompts)**  
   - **Synthetic benign prompts (520 prompts)**  
-  - *(Additional datasets may be tested, but never used in calibration).*  
 
 ### Why This Matters
 - Prevents “after-the-fact” selection of favorable windows.  
@@ -312,7 +313,7 @@ source dh/bin/activate
 pip install -r requirements.txt
 ```
 
-To calibrate a new model, you can use `gather.py` and then `analyze_thresholds.py`, admittedly, while the window seleciton seems correct, the threshold calculation seems to be off, this requires further investigation, we were targeting around 2-3% FPR so we went with 0.11, but improving the analysis probe should produce more accurate results:
+To calibrate a new model, you can use `gather.py` and then `analyze_thresholds.py`:
 ```
 python gather.py --model models/MODEL_NAME --system-prompt-file system_prompts/sys_prompt_probe.txt --attacks-prompts-file datasets/custom_dataset_attacks_probe.txt --benign-prompts-file datasets/custom_dataset_benign_probe.txt --outputs-root outputs/MODEL_NAME
 
