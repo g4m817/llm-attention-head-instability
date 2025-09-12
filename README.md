@@ -2,6 +2,8 @@
 
 > **Status: Exploratory but repeatable.** I first noticed this signal while prototyping prompt-injection defenses. The code automates most analyses, but I haven’t manually audited every artifact. Please treat this as preliminary research: issues/PRs are welcome if you spot mistakes or want to extend the work. I'm open to collaborating if anyone finds this interesting enough.
 
+> DISCLIAMER: I'm currently working on the analyze and re-running results with different identified windows for robust results at target FPRs, some of the results data may change. Please check back tomorrow if you're reading this (unlikely) lol.
+
 ---
 
 ## 1. Overview
@@ -319,8 +321,11 @@ python gather.py --model models/MODEL_NAME --system-prompt-file system_prompts/s
 python analyze_thresholds.py --attacks-root outputs/MODEL_NAME/attacks --benign-root outputs/MODEL_NAME/benign --fprs 0.01
 ```
 
-Which will produce results similar to:
+Which will produce results similar to the following.
+
+Output (Nous):
 ```
+~ python analyze_thresholds.py --attacks-root outputs/nous/attacks --benign-root outputs/nous/benign --fprs 0.01 0.015 0.02 --thr-mode interpolated
 Loaded runs: 100 | attacks=50 | benign=50
 [auto-window] Tmax=159 → starts=[1, 2, 3, 4, 5]...[18, 19, 20], ends=[4, 5, 6, 7, 8]...[78, 79, 80]
 
@@ -338,6 +343,80 @@ achieved TPR  = 0.900
 achieved FPR  = 0.020
 AUROC         = 0.965
 F1_at_thr     = 0.948
+benign_N       = 50  (FPR step = 0.0200)
+FP, TN         = 1, 49
+
+-- Target FPR ≤ 1% --
+start_step    = 3
+end_step      = 6
+mid_high_frac = 0.200
+tail_cut_frac = 0.100
+threshold     = 0.097282
+achieved TPR  = 0.920
+achieved FPR  = 0.020
+AUROC         = 0.962
+F1_at_thr     = 0.948
+benign_N       = 50  (FPR step = 0.0200)
+FP, TN         = 1, 49
+
+-- Target FPR ≤ 2% --
+start_step    = 2
+end_step      = 8
+mid_high_frac = 0.250
+tail_cut_frac = 0.100
+threshold     = 0.093942
+achieved TPR  = 0.940
+achieved FPR  = 0.020
+AUROC         = 0.972
+F1_at_thr     = 0.959
+```
+
+Output (Mistral):
+```
+~ python analyze_thresholds.py --attacks-root outputs/mistral/attacks --benign-root outputs/mistral/benign --fprs 0.01 0.015 0.02 --thr-mode interpolated
+Loaded runs: 100 | attacks=50 | benign=50
+[auto-window] Tmax=159 → starts=[1, 2, 3, 4, 5]...[18, 19, 20], ends=[4, 5, 6, 7, 8]...[78, 79, 80]
+
+=== Recommended operating points ===
+benign_N       = 50  (FPR step = 0.0200)
+FP, TN         = 1, 49
+
+-- Target FPR ≤ 1% --
+start_step    = 10
+end_step      = 23
+mid_high_frac = 0.200
+tail_cut_frac = 0.150
+threshold     = 0.149450
+achieved TPR  = 0.660
+achieved FPR  = 0.020
+AUROC         = 0.917
+F1_at_thr     = 0.878
+benign_N       = 50  (FPR step = 0.0200)
+FP, TN         = 1, 49
+
+-- Target FPR ≤ 1% --
+start_step    = 9
+end_step      = 25
+mid_high_frac = 0.200
+tail_cut_frac = 0.100
+threshold     = 0.148245
+achieved TPR  = 0.680
+achieved FPR  = 0.020
+AUROC         = 0.910
+F1_at_thr     = 0.860
+benign_N       = 50  (FPR step = 0.0200)
+FP, TN         = 1, 49
+
+-- Target FPR ≤ 2% --
+start_step    = 9
+end_step      = 23
+mid_high_frac = 0.200
+tail_cut_frac = 0.150
+threshold     = 0.146267
+achieved TPR  = 0.740
+achieved FPR  = 0.020
+AUROC         = 0.917
+F1_at_thr     = 0.878
 ```
 
 ## AdvBench Evals
