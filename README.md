@@ -233,7 +233,33 @@ The violin plot illustrates separation across distributions: benign prompts clus
 
 ---
 
-## 7. Methodology  
+## Calibration vs. Evaluation
+
+A key design choice is to **separate calibration from evaluation** to avoid after-the-fact cherry-picking of windows and thresholds.
+
+### 7. Calibration (Probe Set)
+- A **small, synthetic probe set** of 50 adversarial instructions and 50 benign instructions was created.  
+- These are **not drawn from AdvBench** or any evaluation dataset.  
+- Purpose: identify (a) the instability window (start/end decoding steps) and (b) a candidate threshold that separates attacks from benign with low false positives.  
+- This step is **model-family specific**:
+  - **Nous-Capybara-7B** → Window = 1–7  
+  - **Mistral-7B-Instruct** → Window = 11–26  
+
+### Evaluation (Held-Out Datasets)
+- Once calibrated, these windows/thresholds are **frozen** and applied as-is to evaluation datasets.  
+- Evaluation sets include:
+  - **AdvBench attacks (520 prompts)**  
+  - **Synthetic benign prompts (520 prompts)**  
+  - *(Additional datasets may be tested, but never used in calibration).*  
+
+### Why This Matters
+- Prevents “after-the-fact” selection of favorable windows.  
+- Shows that instability windows are **model-dependent** (generalize across datasets) rather than dataset-dependent.  
+- Provides a repeatable protocol: probe set → calibration → fixed parameters → evaluation.  
+
+---
+
+## 8. Methodology  
 **Acquiring Heuristics**
 1. Run gather.py with attack/benin probes and an aligned system prompt.
 2. Run analyze.py to extract heuristics from the probes.
@@ -254,7 +280,7 @@ The violin plot illustrates separation across distributions: benign prompts clus
 
 ---
 
-## 8. Limitations
+## 9. Limitations
 - This is likely a statistical representaiton of the **distraction effect**, (Hung et al), without important head analysis or needing to re-tune on new system instructions.
 - **Model-specific calibration** (windows/thresholds).
 - Analyzing windows/thresholds is not perfect, there is some manual tuning required, the windows seem good but the threshold does not (e.g., 0.09 analyzed threshold for FPR 2% - 0.11 in AdvBench produces 2.88% FPR). This requires more investigation across various datasets.
@@ -263,7 +289,7 @@ The violin plot illustrates separation across distributions: benign prompts clus
 
 ---
 
-## 9. Future Work  
+## 10. Future Work  
 - Validate across broader architectures (Qwen, GPT-OSS, etc.).  
 - Explore normalized metrics for cross-model universality.  
 - Test correlation with jailbreak success rates in the wild.  
@@ -271,7 +297,7 @@ The violin plot illustrates separation across distributions: benign prompts clus
 
 ---
 
-## 10. Workflow
+## 11. Workflow
 
 Ensure the `models/` directory exists with the models you want to test:
 ```
@@ -284,6 +310,43 @@ Install:
 python -m venv dh
 source dh/bin/activate
 pip install -r requirements.txt
+```
+
+To calibrate a new model, you can use `gather.py` and then `analyze_thresholds.py`, admittedly, while the window seleciton seems correct, the threshold calculation seems to be off, this requires further investigation, we were targeting around 2-3% FPR so we went with 0.11, but improving the analysis probe should produce more accurate results:
+```
+python gather.py --model models/MODEL_NAME --system-prompt-file system_prompts/sys_prompt_probe.txt --attacks-prompts-file datasets/custom_dataset_attacks_probe.txt --benign-prompts-file datasets/custom_dataset_benign_probe.txt --outputs-root outputs/MODEL_NAME
+
+python analyze_thresholds.py --attacks-root outputs/MODEL_NAME/attacks --benign-root outputs/MODEL_NAME/benign --fprs 0.01 0.05
+```
+
+Which will produce results similar to:
+```
+Loaded runs: 100 | attacks=50 | benign=50
+[auto-window] Tmax=159 → starts=[1, 2, 3, 4, 5]...[18, 19, 20], ends=[4, 5, 6, 7, 8]...[78, 79, 80]
+
+=== Recommended operating points ===
+
+-- Target FPR ≤ 1% --
+start_step    = 1
+end_step      = 7
+mid_high_frac = 0.250
+tail_cut_frac = 0.100
+threshold     = 0.135097
+achieved TPR  = 0.860
+achieved FPR  = 0.000
+AUROC         = 0.978
+F1_at_thr     = 0.939
+
+-- Target FPR ≤ 5% --
+start_step    = 2
+end_step      = 8
+mid_high_frac = 0.250
+tail_cut_frac = 0.100
+threshold     = 0.096605
+achieved TPR  = 0.940
+achieved FPR  = 0.020
+AUROC         = 0.972
+F1_at_thr     = 0.959
 ```
 
 ## AdvBench Evals
